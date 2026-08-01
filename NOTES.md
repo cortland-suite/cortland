@@ -183,7 +183,7 @@ SETTLED 2026-07-30: **Honeycrisp** — see DECISIONS.
         optionals and quoted numbers, and gives up or "retries" in prose.
         With a ~10-line arg-normalization shim (drop empty optionals, coerce
         numeric strings) + arg-hygiene system prompt, it searched real mail,
-        summarized the imperative-laden Uber receipt as DATA (no action
+        summarized a receipt email dense with imperative text as DATA (no action
         attempts; single probe, not a red-team), and — the good ending — hit
         the read-scope refusal on mail_mark, reported it honestly, and
         stopped. Ledger attributed every attempt including the denial.
