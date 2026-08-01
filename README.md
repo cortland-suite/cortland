@@ -40,6 +40,7 @@ silently; every step it performs is written to the same audit DB the tools use.
 | [`@honeycrisp/folders`](https://www.npmjs.com/package/@honeycrisp/folders) | Folder-as-API: drop a file into a watched iCloud folder from any device and a declared local pipeline runs; results land beside the drop. |
 | [`@honeycrisp/context`](https://www.npmjs.com/package/@honeycrisp/context) | A local context layer: captures mail/calendar *metadata* (pointers, never message bodies), serves briefings and person lookups over MCP, learns from your corrections. |
 | [`@honeycrisp/setup`](https://www.npmjs.com/package/@honeycrisp/setup) | The onboarding wizard above. |
+| [`@honeycrisp/remote`](https://www.npmjs.com/package/@honeycrisp/remote) | Gateway serving the suite over MCP streamable HTTP — loopback-only, bearer tokens (read/write scopes), audit rows that name who asked. Share the port over your own private network (e.g. Tailscale) to reach it from your other devices. |
 
 ## How approvals work
 

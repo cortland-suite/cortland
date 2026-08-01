@@ -120,6 +120,18 @@ SETTLED 2026-07-30: **Honeycrisp** — see DECISIONS.
     the approval queue — same "reach the human wherever they are" infrastructure.
 
 ### Remote access tier (docs/05)
+27. M1 BUILT + LIVE-VERIFIED 2026-08-01: @honeycrisp/remote gateway (see
+    docs/05 milestone note for the full shape). Design deltas worth recording:
+    (a) tokens are NOT in the Keychain — the server stores only SHA-256 +
+    metadata and shows the secret once, so there is no secret on the Mac at
+    all; (b) read-scope refusals happen before the gate but still register
+    the withheld tools (visible, refusing, audited) instead of hiding them —
+    a silent tool-not-found teaches the caller nothing and records nothing;
+    (c) requests with an Origin header are refused outright instead of
+    allowlisting hosts — no browser has business here and there's nothing to
+    misconfigure; (d) audit gained a `principal` column (migration included)
+    so remote rows answer WHO asked. Wizard step deferred. Next: M2 (OAuth +
+    public rung + claude.ai connector test) — see Q24/Q25.
 24. OPEN 2026-07-31: OAuth shape for the public rung — in-process MCP auth spec
     vs fronting a maintained authorization-server library. Survey before code;
     hand-rolled OAuth is how products end up on incident blogs.

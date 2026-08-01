@@ -14,6 +14,8 @@ export interface ExecutionDeps {
   /** Re-read per call so live mode can change without a restart; errors → dry-run. */
   getConfig: () => GovernedConfig;
   version: string;
+  /** Identity annotation for audit rows when calls arrive remotely. */
+  principal?: string;
 }
 
 export interface ExecutionResult {
@@ -34,6 +36,7 @@ export async function executeGoverned<Args extends Record<string, unknown>>(
     undo: def.undo,
     args: redacted,
     toolVersion: deps.version,
+    principal: deps.principal,
   };
   const ctx: ToolContext = {
     live: true,

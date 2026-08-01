@@ -25,6 +25,9 @@ export interface AuditEntry {
   detail?: string;
   undoRecipe?: unknown;
   toolVersion: string;
+  /** Who asked, when the call arrived through a remote surface:
+   *  "token:<id8> session:<id8>". Absent for local (stdio) calls. */
+  principal?: string;
 }
 
 export interface AuditRow extends AuditEntry {
@@ -60,9 +63,15 @@ export class AuditStore {
         approval_method TEXT,
         detail TEXT,
         undo_recipe_json TEXT,
-        tool_version TEXT NOT NULL
+        tool_version TEXT NOT NULL,
+        principal TEXT
       )
     `);
+    // Migration for DBs created before the remote tier: add principal.
+    const columns = this.db.pragma("table_info(audit)") as Array<{ name: string }>;
+    if (!columns.some((c) => c.name === "principal")) {
+      this.db.exec("ALTER TABLE audit ADD COLUMN principal TEXT");
+    }
   }
 
   record(entry: AuditEntry): AuditRow {
@@ -75,8 +84,9 @@ export class AuditStore {
       .prepare(
         `INSERT INTO audit
          (id, ts, tool, scope, mode, undo, args_json, dry_run, outcome,
-          approval_id, approval_method, detail, undo_recipe_json, tool_version)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+          approval_id, approval_method, detail, undo_recipe_json, tool_version,
+          principal)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
       )
       .run(
         row.id,
@@ -92,7 +102,8 @@ export class AuditStore {
         row.approvalMethod ?? null,
         row.detail ?? null,
         row.undoRecipe === undefined ? null : JSON.stringify(row.undoRecipe),
-        row.toolVersion
+        row.toolVersion,
+        row.principal ?? null
       );
     return row;
   }
@@ -119,6 +130,7 @@ export class AuditStore {
           ? undefined
           : (JSON.parse(r.undo_recipe_json as string) as unknown),
       toolVersion: r.tool_version as string,
+      principal: (r.principal as string | null) ?? undefined,
     }));
   }
 

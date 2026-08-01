@@ -1,0 +1,57 @@
+{
+  "name": "@honeycrisp/remote",
+  "version": "0.1.0",
+  "description": "The remote gateway: the suite's governed MCP servers over loopback HTTP with bearer tokens, scopes, and principal-annotated audit — reach them from your own devices via your own tunnel",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/gateway.js",
+  "bin": {
+    "honeycrisp-remote": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "launchd",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "prepublishOnly": "npm run build && npm run test"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "remote",
+    "gateway",
+    "streamable-http",
+    "macos",
+    "governed"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/honeycrisp-suite/honeycrisp.git",
+    "directory": "packages/remote"
+  },
+  "homepage": "https://github.com/honeycrisp-suite/honeycrisp#readme",
+  "bugs": {
+    "url": "https://github.com/honeycrisp-suite/honeycrisp/issues"
+  },
+  "dependencies": {
+    "@honeycrisp/governed": "^0.1.1",
+    "@honeycrisp/mail": "^0.1.1",
+    "@honeycrisp/context": "^0.1.1",
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0",
+    "vitest": "^3.0.0"
+  }
+}

@@ -122,10 +122,17 @@ migration rides the SDK upgrade.
 - **M0 — spike:** governed server over streamable HTTP on loopback; the
   existing test suite's gate tests re-run against the HTTP transport.
   Exit: elicitation and denial behave identically over HTTP and stdio.
-- **M1 — gateway:** @honeycrisp/remote with mounts, bearer tokens (Keychain),
-  scopes, audit annotations, launchd + on/off/status, wizard step. Exit: a
-  second Mac on the tailnet drives mail search end to end; a read token
-  denied on a gated call shows the right audit row.
+- **M1 — gateway: BUILT 2026-08-01.** @honeycrisp/remote: loopback-only
+  streamable-HTTP mounts for mail+context, bearer tokens (secret shown once,
+  SHA-256 + metadata on disk — strictly better than Keychain-storing the
+  secret, since there is nothing to steal), read/write scopes with pre-gate
+  refusal + audit row, principal (`token:<id> session:<id>`) on every remote
+  audit row via a new framework column, Origin-header refusal, session↔token
+  binding, revocation effective mid-session, launchd on/off/status. 8 tests +
+  live-verified: real mail_search over HTTP (fenced output survives the
+  transport), read-token mail_mark refused before the gate with the exact
+  audit row the exit criterion named. Deviation from plan: wizard step
+  deferred — the CLI's own on/off/status is the onboarding for now.
 - **M2 — public rung:** Funnel/Cloudflare recipe, OAuth 2.1 endpoint,
   dynamic client registration; claude.ai custom connector live test from the
   phone. Exit: the phone app searches mail from a coffee shop; a gated write

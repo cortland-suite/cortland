@@ -20,6 +20,8 @@ export interface GovernedServerOptions {
   approval?: ApprovalChannel;
   /** Argv to hygiene-check. Defaults to process.argv. */
   argv?: string[];
+  /** Identity annotation stamped into every audit row (remote gateway). */
+  principal?: string;
 }
 
 export interface GovernedServer {
@@ -41,6 +43,7 @@ export function createGovernedServer(opts: GovernedServerOptions): GovernedServe
     approval: opts.approval ?? new ConfiguredApprovalChannel(dataDir, elicit),
     getConfig: () => loadConfig(dataDir),
     version: opts.version,
+    principal: opts.principal,
   };
 
   for (const def of opts.tools) {
