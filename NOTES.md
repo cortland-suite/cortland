@@ -168,6 +168,35 @@ SETTLED 2026-07-30: **Honeycrisp** — see DECISIONS.
     the remote tier: docs/05 drafted same day (exposure ladder 0→3, @honeycrisp/
     remote gateway, bearer→OAuth, stolen-token-still-can't-send-mail property).
 
+### Local models (the Siri-class experiment)
+28. FIELD TEST 2026-08-01: full local stack on the 8 GB M2 (Ollama 0.32,
+    Gemma 3 4B, Llama 3.2 3B) — the deliberate simulation of "what if the
+    driving model were Siri-class and on-device?" Findings:
+    (1) **Gemma 3 has no tool template in Ollama** — cannot drive tools
+        natively. It slots into the context layer's ollama provider fine:
+        briefing ran end-to-end with `Layer 1: ollama:gemma3:4b,
+        egress=local` in the provenance and network:false in the audit row.
+        Fully-local briefings: WORKING (extraction quality untested — the
+        candidate window was empty).
+    (2) **A 3B model CAN drive the governed tools over the M1 gateway — with
+        a host-side adapter.** Raw, it picks wrong tools, sends empty-string
+        optionals and quoted numbers, and gives up or "retries" in prose.
+        With a ~10-line arg-normalization shim (drop empty optionals, coerce
+        numeric strings) + arg-hygiene system prompt, it searched real mail,
+        summarized the imperative-laden Uber receipt as DATA (no action
+        attempts; single probe, not a red-team), and — the good ending — hit
+        the read-scope refusal on mail_mark, reported it honestly, and
+        stopped. Ledger attributed every attempt including the denial.
+    (3) Architectural conclusion: the harness carries the safety, the shim
+        is the bridge. Strict validation stays in the governed layer;
+        forgiveness lives in the host adapter. That adapter IS the design
+        sketch for the Apple Foundation Models bridge (Q21) — AFM speaks
+        structured tool calling, so "swap in Apple's model" is the same shim
+        pointed at a different runtime.
+    Follow-ups: boolean coercion in the shim; a real red-team of the fence
+    with small models; promote the harness from scratchpad to an example
+    package (`examples/local-agent`) once it stabilizes.
+
 ### Context layer (docs/04)
 (Q13–Q15 settled 2026-07-30 in the design session — docs/04 is now the full design.
 M1 BUILT same day: packages/context — store with
