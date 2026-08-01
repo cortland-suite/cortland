@@ -1,0 +1,23 @@
+{
+  "name": "@honeycrisp/example-reminders",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Demo governed-MCP server: one read tool and one gated write against Apple Reminders",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "honeycrisp-example-reminders": "dist/server.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js"
+  },
+  "dependencies": {
+    "@honeycrisp/governed": "*",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
+  }
+}

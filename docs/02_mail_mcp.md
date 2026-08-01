@@ -1,0 +1,53 @@
+# 02 — Mail MCP (first tool on the framework)
+
+**Why Mail first:** highest-value surface (email is where life's decisions arrive),
+highest-fear surface (nobody trusts a raw send_email tool) — so it's where governance
+visibly matters. Apple Mail already aggregates multiple accounts locally: instant
+multi-account access with zero cloud OAuth.
+
+## Tool surface (v1)
+
+| Tool | Mode | Notes |
+|------|------|-------|
+| `mail_list_accounts` | read | accounts + mailboxes |
+| `mail_search` | read | query, account?, mailbox?, date range, from/to; returns headers + snippets |
+| `mail_read` | read | full message by id; body returned inside injection fence |
+| `mail_thread` | read | conversation view for a message |
+| `mail_create_draft` | write-safe | to/cc/subject/body (+ reply-to-message id); lands in Drafts with provenance footer |
+| `mail_move` / `mail_mark` | write-gated | archive, mark read/flag |
+| `mail_send` | **does not exist in v1** | see below |
+
+**The draft-first doctrine (decided 2026-07-29):** v1 ships with NO send tool. The
+outward path is create_draft → human opens Mail.app → human hits send. The gate you
+never build cannot be bypassed, and "the AI literally cannot send email" is a
+one-sentence trust story that sells the whole suite. It also changes the risk class of
+the entire server: worst case becomes embarrassment (a bad draft), not damage. Revisit
+only after the framework's v2 approval queue exists.
+
+## Implementation notes
+
+- **Actions:** AppleScript/JXA via osascript (create draft, move, mark, account/mailbox
+  enumeration). Slow but correct; volume is low for actions.
+- **Search/read (settled 2026-07-30, from real-mailbox benchmarks):** two tiers.
+  AppleScript `whose` header search (subject/sender/date) is sub-second at ~2k
+  messages — it is Tier 1, alongside all reads and actions, needing only the
+  Automation permission. AppleScript full-text (`content contains`) timed out at
+  170s on the same inbox — full-text is Tier 2: **Spotlight via mdfind** over
+  ~/Library/Mail, which requires opt-in Full Disk Access. CRITICAL: without FDA,
+  Spotlight silently returns zero mail results — the tool must probe FDA
+  (readability of ~/Library/Mail) and report "full-text search requires Full Disk
+  Access," never an empty result set. Envelope Index stays untouched unless mdfind
+  proves insufficient. Re-verify header latency on a 10k+ mailbox and on macOS 27's
+  rebuilt Spotlight.
+- **Permissions:** first osascript call triggers macOS Automation prompt (this app →
+  Mail). Tier 2 full-text additionally needs Full Disk Access, granted by the user
+  to the server process. Document both in README; the two-tier story is also the
+  least-privilege story.
+- **Multi-account:** every tool takes optional `account`; default = all for reads,
+  REQUIRED for drafts (never guess which identity writes).
+
+## MVP milestone
+
+Search + read + thread + create_draft working on the framework, with audit rows and
+fences, against a real multi-account Mail.app. That alone replaces copy-paste email
+relay workflows — the daily-driver moment.

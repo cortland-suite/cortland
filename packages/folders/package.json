@@ -1,0 +1,57 @@
+{
+  "name": "@honeycrisp/folders",
+  "version": "0.1.1",
+  "description": "Folder-as-API: watched folders run declared local pipelines; results land beside the drop; every run is audited",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "honeycrisp-folders": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "launchd",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "start": "node dist/cli.js",
+    "prepublishOnly": "npm run build && npm run test"
+  },
+  "dependencies": {
+    "chokidar": "^4.0.0",
+    "@honeycrisp/governed": "^0.1.1",
+    "yaml": "^2.6.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0",
+    "vitest": "^3.0.0"
+  },
+  "keywords": [
+    "mcp",
+    "icloud",
+    "automation",
+    "pipeline",
+    "folder-watcher",
+    "macos",
+    "governed"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/honeycrisp-suite/honeycrisp.git",
+    "directory": "packages/folders"
+  },
+  "homepage": "https://github.com/honeycrisp-suite/honeycrisp#readme",
+  "bugs": {
+    "url": "https://github.com/honeycrisp-suite/honeycrisp/issues"
+  }
+}

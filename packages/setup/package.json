@@ -1,0 +1,50 @@
+{
+  "name": "@honeycrisp/setup",
+  "version": "0.1.1",
+  "description": "Interactive onboarding for the governed-MCP suite: client config, permission warm-up, iCloud agents folder, launchd",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "honeycrisp": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "prepublishOnly": "npm run build && npm run test"
+  },
+  "dependencies": {
+    "@honeycrisp/governed": "^0.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0",
+    "vitest": "^3.0.0"
+  },
+  "keywords": [
+    "mcp",
+    "setup",
+    "onboarding",
+    "macos",
+    "governed",
+    "honeycrisp"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/honeycrisp-suite/honeycrisp.git",
+    "directory": "packages/setup"
+  },
+  "homepage": "https://github.com/honeycrisp-suite/honeycrisp#readme",
+  "bugs": {
+    "url": "https://github.com/honeycrisp-suite/honeycrisp/issues"
+  }
+}

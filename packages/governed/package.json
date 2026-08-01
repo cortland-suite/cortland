@@ -1,0 +1,57 @@
+{
+  "name": "@honeycrisp/governed",
+  "version": "0.1.1",
+  "description": "The governed-MCP framework: dry-run defaults, human-gated writes, audit trail, provenance, undo — enforced by construction",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "prepublishOnly": "npm run build && npm run test"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "better-sqlite3": "^11.10.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0",
+    "vitest": "^3.0.0"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "governance",
+    "audit",
+    "dry-run",
+    "human-in-the-loop",
+    "apple",
+    "macos"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/honeycrisp-suite/honeycrisp.git",
+    "directory": "packages/governed"
+  },
+  "homepage": "https://github.com/honeycrisp-suite/honeycrisp#readme",
+  "bugs": {
+    "url": "https://github.com/honeycrisp-suite/honeycrisp/issues"
+  }
+}

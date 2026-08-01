@@ -1,0 +1,17 @@
+{
+  "name": "honeycrisp-workspace",
+  "private": true,
+  "description": "Governed AI tooling for the Apple ecosystem — workspace root",
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "examples/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

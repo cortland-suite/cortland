@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mail+Calendar capture sweep every 15 minutes. Rendered/installed by the
+     setup wizard, or by hand: replace placeholders, copy to
+     ~/Library/LaunchAgents/, launchctl load -w. -->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.honeycrisp.context-capture</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>REPLACE_NODE_PATH</string>
+    <string>REPLACE_CLI_PATH</string>
+    <string>capture</string>
+  </array>
+  <key>StartInterval</key>
+  <integer>900</integer>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>StandardOutPath</key>
+  <string>/tmp/honeycrisp-context-capture.log</string>
+  <key>StandardErrorPath</key>
+  <string>/tmp/honeycrisp-context-capture.err</string>
+</dict>
+</plist>

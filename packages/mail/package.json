@@ -1,0 +1,54 @@
+{
+  "name": "@honeycrisp/mail",
+  "version": "0.1.1",
+  "description": "Apple Mail over MCP, built on the governed framework: reads free, drafts write-safe, no send tool at all",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/server.js",
+  "bin": {
+    "honeycrisp-mail": "dist/server.js"
+  },
+  "files": [
+    "dist",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "start": "node dist/server.js",
+    "prepublishOnly": "npm run build && npm run test"
+  },
+  "dependencies": {
+    "@honeycrisp/governed": "^0.1.1",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0",
+    "vitest": "^3.0.0"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "apple-mail",
+    "email",
+    "macos",
+    "applescript",
+    "governed"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/honeycrisp-suite/honeycrisp.git",
+    "directory": "packages/mail"
+  },
+  "homepage": "https://github.com/honeycrisp-suite/honeycrisp#readme",
+  "bugs": {
+    "url": "https://github.com/honeycrisp-suite/honeycrisp/issues"
+  }
+}

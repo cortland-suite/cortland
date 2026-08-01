@@ -1,0 +1,58 @@
+{
+  "name": "@honeycrisp/context",
+  "version": "0.1.1",
+  "description": "The context layer, M1: derived metadata + pointers over Mail, served over MCP. Pointers, not copies.",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "honeycrisp-context": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "launchd",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "start": "node dist/cli.js serve",
+    "prepublishOnly": "npm run build && npm run test"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.10.0",
+    "@honeycrisp/governed": "^0.1.1",
+    "yaml": "^2.6.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0",
+    "vitest": "^3.0.0"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "personal-context",
+    "briefing",
+    "local-first",
+    "macos",
+    "governed"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/honeycrisp-suite/honeycrisp.git",
+    "directory": "packages/context"
+  },
+  "homepage": "https://github.com/honeycrisp-suite/honeycrisp#readme",
+  "bugs": {
+    "url": "https://github.com/honeycrisp-suite/honeycrisp/issues"
+  }
+}

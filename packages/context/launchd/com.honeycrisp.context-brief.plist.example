@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Morning briefing at 07:00 into REPLACE_ARG (a Briefings folder, ideally in
+     iCloud Drive so it reaches every device). -->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.honeycrisp.context-brief</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>REPLACE_NODE_PATH</string>
+    <string>REPLACE_CLI_PATH</string>
+    <string>brief</string>
+    <string>REPLACE_ARG</string>
+  </array>
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>7</integer>
+    <key>Minute</key>
+    <integer>0</integer>
+  </dict>
+  <key>StandardOutPath</key>
+  <string>/tmp/honeycrisp-context-brief.log</string>
+  <key>StandardErrorPath</key>
+  <string>/tmp/honeycrisp-context-brief.err</string>
+</dict>
+</plist>

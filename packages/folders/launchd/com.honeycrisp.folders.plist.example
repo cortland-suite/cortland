@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  launchd template for honeycrisp-folders.
+
+  1. Replace REPLACE_NODE_PATH   with: `which node`
+  2. Replace REPLACE_CLI_PATH    with the absolute path to packages/folders/dist/cli.js
+  3. Replace REPLACE_WATCH_ROOT  with the folder tree to watch
+  4. Copy to ~/Library/LaunchAgents/com.honeycrisp.folders.plist
+  5. launchctl load ~/Library/LaunchAgents/com.honeycrisp.folders.plist
+-->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.honeycrisp.folders</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>REPLACE_NODE_PATH</string>
+    <string>REPLACE_CLI_PATH</string>
+    <string>REPLACE_WATCH_ROOT</string>
+  </array>
+  <key>KeepAlive</key>
+  <true/>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>StandardOutPath</key>
+  <string>/tmp/honeycrisp-folders.log</string>
+  <key>StandardErrorPath</key>
+  <string>/tmp/honeycrisp-folders.err</string>
+</dict>
+</plist>
