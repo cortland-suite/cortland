@@ -1,6 +1,6 @@
 {
   "name": "@honeycrisp/mail",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Apple Mail over MCP, built on the governed framework: reads free, drafts write-safe, no send tool at all",
   "license": "MIT",
   "type": "module",
@@ -50,5 +50,6 @@
   "homepage": "https://github.com/honeycrisp-suite/honeycrisp#readme",
   "bugs": {
     "url": "https://github.com/honeycrisp-suite/honeycrisp/issues"
-  }
+  },
+  "mcpName": "io.github.honeycrisp-suite/mail"
 }

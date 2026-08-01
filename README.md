@@ -19,12 +19,22 @@ the suite is built on it.
 
 ## Install
 
+From npm (recommended):
+
+```
+npm install -g @honeycrisp/mail @honeycrisp/context @honeycrisp/setup
+honeycrisp setup
+```
+
+Or from a clone of this repo:
+
 ```
 npm install && npm run build
 node packages/setup/dist/cli.js setup
 ```
 
-The setup wizard walks you through everything, one y/N question at a time: it
+The setup wizard walks you through everything, one yes/no question at a time
+(the default answer is always No — nothing proceeds unless you say so): it
 registers the servers with Claude Code / Claude Desktop, triggers the macOS
 permission prompts while you're watching (instead of mid-conversation later),
 explains the optional Full Disk Access tier for full-text mail search, and can

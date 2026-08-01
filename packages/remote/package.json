@@ -1,6 +1,6 @@
 {
   "name": "@honeycrisp/remote",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "The remote gateway: the suite's governed MCP servers over loopback HTTP with bearer tokens, scopes, and principal-annotated audit — reach them from your own devices via your own tunnel",
   "license": "MIT",
   "type": "module",
@@ -53,5 +53,6 @@
     "@types/node": "^22.0.0",
     "typescript": "^5.6.0",
     "vitest": "^3.0.0"
-  }
+  },
+  "mcpName": "io.github.honeycrisp-suite/remote"
 }

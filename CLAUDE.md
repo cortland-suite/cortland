@@ -43,7 +43,9 @@ Three stacked products, built in order (full reasoning in README):
 - **Prior art to honor:** iwork_mcp (113 tools for Numbers/Pages/Keynote) — match its
   tool-naming and packaging conventions where sensible.
 - **Naming:** the suite is **Honeycrisp** (decided 2026-07-30, see NOTES).
-  Packages ship scoped: @honeycrisp/governed, /mail, /folders, /context, /setup.
+  Packages ship scoped: @honeycrisp/governed, /mail, /folders, /context,
+  /setup, /remote. All published to npm (2026-08-01); mail and context also
+  carry `mcpName` + `server.json` for the official MCP Registry.
 
 ## How to work a session here
 

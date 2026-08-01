@@ -1,6 +1,6 @@
 {
   "name": "@honeycrisp/context",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "The context layer, M1: derived metadata + pointers over Mail, served over MCP. Pointers, not copies.",
   "license": "MIT",
   "type": "module",
@@ -54,5 +54,6 @@
   "homepage": "https://github.com/honeycrisp-suite/honeycrisp#readme",
   "bugs": {
     "url": "https://github.com/honeycrisp-suite/honeycrisp/issues"
-  }
+  },
+  "mcpName": "io.github.honeycrisp-suite/context"
 }

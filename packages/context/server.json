@@ -1,0 +1,27 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.honeycrisp-suite/context",
+  "description": "A local-first personal context layer over MCP: mail and calendar metadata (pointers, never message bodies), daily briefings, person lookups, and a corrections flywheel — all on your own disk, every action audited.",
+  "repository": {
+    "url": "https://github.com/honeycrisp-suite/honeycrisp",
+    "source": "github"
+  },
+  "version": "0.1.2",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@honeycrisp/context",
+      "version": "0.1.2",
+      "transport": {
+        "type": "stdio"
+      },
+      "runtimeArguments": [
+        {
+          "type": "positional",
+          "value": "serve",
+          "description": "Run the MCP server (other CLI modes: capture, brief)"
+        }
+      ]
+    }
+  ]
+}
