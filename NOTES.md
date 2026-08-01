@@ -196,6 +196,17 @@ SETTLED 2026-07-30: **Honeycrisp** — see DECISIONS.
     Follow-ups: boolean coercion in the shim; a real red-team of the fence
     with small models; promote the harness from scratchpad to an example
     package (`examples/local-agent`) once it stabilizes.
+    CODA, same day: **Gemma 4 exists** (April 2026, post-knowledge-cutoff;
+    the earlier "no Gemma 4" was a wrong registry tag — sizes are E2B/E4B/
+    12B/26B-A4B/31B, not "4b"). gemma4:e4b (9.6 GB, runs on the 8 GB M2,
+    ~30 s cold load) **speaks tools natively and cleanly** — no empty-string
+    args, no type junk, shim unnecessary; understood and honestly relayed
+    BOTH refusal types (FDA-gated fulltext, read-scope mail_mark) on the
+    first attempt. Its failure mode is task drift on large payloads (wandered
+    off a 6 KB result set; fixed by small limits + explicit steer). Verdict
+    upgrade: with Gemma 4-class on-device models, the host adapter shrinks
+    from "arg normalizer" to "payload budgeter" — the Siri-class thesis got
+    stronger. Briefing provider switched to gemma4:e4b.
 
 ### Context layer (docs/04)
 (Q13–Q15 settled 2026-07-30 in the design session — docs/04 is now the full design.
