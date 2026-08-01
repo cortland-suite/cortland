@@ -116,7 +116,14 @@ client. When neither fits, route approvals through a folder:
 
 Each gated action writes a `pending-*.md` file into that folder describing exactly
 what wants to run. Put the folder in iCloud Drive and it appears on every device
-you own. Decide either way:
+you own. Optionally add `"notify": { "url": "https://ntfy.sh/<long-random-topic>" }`
+to the approval block and your phone gets a push the moment a request lands (free
+ntfy app, subscribe to your topic). The ping is a fixed, information-free string —
+no tool name, no summary, nothing — because the relay shouldn't learn anything
+about your life; the topic name is the secret, so make it unguessable (the setup
+wizard mints one). Every ping is recorded in the audit log as declared egress
+(host only), and a dead relay never delays or blocks the approval itself.
+Decide either way:
 
 - **Move the file** into the `Approve` subfolder to run it, or `Deny` to refuse —
   fully native on iOS (long-press → Move), no text editor required (stock iOS

@@ -115,9 +115,20 @@ SETTLED 2026-07-30: **Honeycrisp** — see DECISIONS.
     as untrusted (documented in the package README). v2 candidates: executable
     allowlist in the daemon's own config, or pipeline pinning (daemon refuses a
     changed yaml until the human re-approves — the approval-queue pattern again).
-19. Remote failure notification (the phone case): error files work when you look;
-    a push (ntfy or similar) closes the loop when you don't. Parked for v2 alongside
-    the approval queue — same "reach the human wherever they are" infrastructure.
+19. BUILT 2026-08-01 for the approval channel: the **ntfy ping**. Opt-in
+    `approval.notify.url` in config.json; when a pending approval file is
+    written, one POST goes to the user's push topic and their phone says "go
+    look". Doctrine enforced in code + 5 tests: the body is a FIXED
+    information-free string (no tool, no summary, no id — asserted); https
+    only (loopback excepted); every attempt is an audited egress row carrying
+    the HOST only (the topic name is the secret — wizard mints
+    honeycrisp-<32hex>); a dead relay never delays or breaks the approval
+    (proven with a blackholed port). Field note: ntfy.sh was UNREACHABLE from
+    the dev network at build time (TCP never connects; DNS fine) — possibly
+    down, possibly pfSense egress policy; the failure path behaved exactly as
+    designed. Self-hosting ntfy remains the doctrine-preferred deployment.
+    The folder-watcher error-file case from the original note remains open —
+    same mechanism would serve it.
 
 ### Remote access tier (docs/05)
 27. M1 BUILT + LIVE-VERIFIED 2026-08-01: @honeycrisp/remote gateway (see

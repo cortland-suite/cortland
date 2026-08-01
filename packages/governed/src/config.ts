@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
+import { notifyUrlAllowed } from "./notify.js";
 import type { GovernedConfig } from "./types.js";
 
 /**
@@ -22,7 +23,15 @@ export type ApprovalChannelSpec =
   | { channel: "auto"; timeoutSeconds?: number }
   | { channel: "elicit"; fallback: "dialog" | "none"; timeoutSeconds?: number }
   | { channel: "dialog" }
-  | { channel: "folder"; dir: string; timeoutSeconds?: number; pollSeconds?: number }
+  | {
+      channel: "folder";
+      dir: string;
+      timeoutSeconds?: number;
+      pollSeconds?: number;
+      /** Optional push-relay URL pinged when a request lands (see notify.ts).
+       *  A malformed notify block disables the ping, never the channel. */
+      notifyUrl?: string;
+    }
   | { channel: "invalid"; reason: string };
 
 export function defaultDataDir(appName: string): string {
@@ -111,11 +120,20 @@ export function loadApprovalConfig(dataDir: string): ApprovalChannelSpec {
     const dir = a.dir.startsWith("~/")
       ? path.join(os.homedir(), a.dir.slice(2))
       : a.dir;
+    const notify = a.notify as { url?: unknown } | undefined;
+    const notifyUrl =
+      typeof notify === "object" &&
+      notify !== null &&
+      typeof notify.url === "string" &&
+      notifyUrlAllowed(notify.url)
+        ? notify.url
+        : undefined;
     return {
       channel: "folder",
       dir,
       timeoutSeconds: typeof a.timeoutSeconds === "number" ? a.timeoutSeconds : undefined,
       pollSeconds: typeof a.pollSeconds === "number" ? a.pollSeconds : undefined,
+      notifyUrl,
     };
   }
   return {

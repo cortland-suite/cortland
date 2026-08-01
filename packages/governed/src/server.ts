@@ -40,7 +40,8 @@ export function createGovernedServer(opts: GovernedServerOptions): GovernedServe
   const elicit = new ElicitationApprovalChannel(() => server.server);
   const deps: ExecutionDeps = {
     audit,
-    approval: opts.approval ?? new ConfiguredApprovalChannel(dataDir, elicit),
+    approval:
+      opts.approval ?? new ConfiguredApprovalChannel(dataDir, elicit, audit, opts.version),
     getConfig: () => loadConfig(dataDir),
     version: opts.version,
     principal: opts.principal,

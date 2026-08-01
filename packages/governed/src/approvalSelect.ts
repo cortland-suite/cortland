@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { MacDialogApprovalChannel } from "./approval.js";
 import { ElicitationApprovalChannel } from "./approvalElicit.js";
 import { FolderApprovalChannel } from "./approvalFolder.js";
+import type { AuditStore } from "./audit.js";
 import { loadApprovalConfig } from "./config.js";
 import type { ApprovalChannel, ApprovalRequest, ApprovalResult } from "./types.js";
 
@@ -23,7 +24,10 @@ import type { ApprovalChannel, ApprovalRequest, ApprovalResult } from "./types.j
 export class ConfiguredApprovalChannel implements ApprovalChannel {
   constructor(
     private dataDir: string,
-    private elicit?: ElicitationApprovalChannel
+    private elicit?: ElicitationApprovalChannel,
+    /** When present, every notify-ping attempt is recorded as an egress row. */
+    private audit?: AuditStore,
+    private version = "0"
   ) {}
 
   async request(req: ApprovalRequest): Promise<ApprovalResult> {
@@ -50,6 +54,25 @@ export class ConfiguredApprovalChannel implements ApprovalChannel {
           dir: spec.dir,
           timeoutSeconds: spec.timeoutSeconds,
           pollSeconds: spec.pollSeconds,
+          notifyUrl: spec.notifyUrl,
+          onNotifyResult: (result) => {
+            // Declared, audited egress — same rule the model providers live by.
+            let host = "invalid-url";
+            try {
+              host = new URL(spec.notifyUrl!).host;
+            } catch { /* recorded as invalid-url */ }
+            this.audit?.record({
+              tool: "approval_notify",
+              scope: "Approvals→push-relay",
+              mode: "write-safe",
+              undo: "none",
+              args: { host }, // never the full URL — the topic is a secret
+              dryRun: false,
+              outcome: result.ok ? "ok" : "error",
+              detail: result.detail,
+              toolVersion: this.version,
+            });
+          },
         }).request(req);
       case "invalid":
         return {

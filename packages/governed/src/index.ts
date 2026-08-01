@@ -13,6 +13,7 @@ export { ConfiguredApprovalChannel } from "./approvalSelect.js";
 export { loadConfig, loadApprovalConfig, defaultDataDir } from "./config.js";
 export type { ApprovalChannelSpec } from "./config.js";
 export { fence, FENCE_NOTICE } from "./fence.js";
+export { notifyApprovalWaiting, notifyUrlAllowed, NOTIFY_BODY, NOTIFY_TITLE } from "./notify.js";
 export { redactArgs } from "./redact.js";
 export { assertCleanArgv, findSecretsInArgv } from "./hygiene.js";
 export { runJxa } from "./osascript.js";

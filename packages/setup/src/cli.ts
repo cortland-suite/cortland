@@ -24,7 +24,7 @@ import {
   withServer,
   writeDesktopConfig,
 } from "./desktopConfig.js";
-import { configureFolderApprovals } from "./approvals.js";
+import { configureApprovalNotify, configureFolderApprovals } from "./approvals.js";
 import { createAgentsFolder } from "./starter.js";
 import { installPlist, renderPlist, renderTemplate } from "./launchd.js";
 
@@ -309,6 +309,21 @@ if (!fs.existsSync(icloudRoot)) {
         "the Files app. No decision means DENY."
     );
     record("configure_folder_approvals", result.approvalsDir);
+
+    if (
+      await confirm(
+        "Also ping your phone when an approval is waiting (one POST to ntfy.sh " +
+          "per request — the message carries no details, just 'go look')?"
+      )
+    ) {
+      const notify = configureApprovalNotify(defaultDataDir("honeycrisp"));
+      console.log(`  push topic minted: ${notify.topic}`);
+      console.log(
+        "  On your phone: install the free ntfy app and subscribe to that " +
+          "topic. The topic name is the secret — treat it like a password."
+      );
+      record("configure_approval_notify", "ntfy.sh (topic in config.json)");
+    } else skipped.push("approval push ping");
   } catch (err) {
     console.log(`  could not configure: ${String(err)}`);
     skipped.push("remote approvals (config error)");

@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
+import { notifyApprovalWaiting } from "./notify.js";
 import type { ApprovalChannel, ApprovalRequest, ApprovalResult } from "./types.js";
 
 /**
@@ -44,6 +45,12 @@ export interface FolderApprovalOptions {
   timeoutSeconds?: number;
   /** How often the file is re-read. Clamped to [1, 30]. Default 2. */
   pollSeconds?: number;
+  /** Optional push-relay URL (ntfy-style) pinged when a request is written.
+   *  The ping body is a fixed, information-free string; see notify.ts. */
+  notifyUrl?: string;
+  /** Called with the outcome of each notify attempt (the caller audits it).
+   *  Notification failure never affects the approval flow. */
+  onNotifyResult?: (result: { ok: boolean; detail?: string }) => void;
 }
 
 const APPROVE_CHECKED = /^\s*[-*]\s*\[\s*[xX✓✔]\s*\]\s*\*{0,2}APPROVE\b/m;
@@ -53,11 +60,15 @@ export class FolderApprovalChannel implements ApprovalChannel {
   private dir: string;
   private timeoutMs: number;
   private pollMs: number;
+  private notifyUrl?: string;
+  private onNotifyResult?: FolderApprovalOptions["onNotifyResult"];
 
   constructor(opts: FolderApprovalOptions) {
     this.dir = opts.dir;
     this.timeoutMs = clamp(opts.timeoutSeconds ?? 300, 10, 3600) * 1000;
     this.pollMs = clamp(opts.pollSeconds ?? 2, 1, 30) * 1000;
+    this.notifyUrl = opts.notifyUrl;
+    this.onNotifyResult = opts.onNotifyResult;
   }
 
   async request(req: ApprovalRequest): Promise<ApprovalResult> {
@@ -84,6 +95,17 @@ export class FolderApprovalChannel implements ApprovalChannel {
       fs.mkdirSync(path.join(this.dir, "Deny"), { recursive: true });
     } catch {
       /* checkbox editing still works */
+    }
+    // Ping the human's push relay, fire-and-forget: the decision surface is
+    // the file; the ping is only "go look". Its failure changes nothing here.
+    if (this.notifyUrl) {
+      void notifyApprovalWaiting(this.notifyUrl).then((result) => {
+        try {
+          this.onNotifyResult?.(result);
+        } catch {
+          /* an audit-callback failure must not affect the approval either */
+        }
+      });
     }
 
     const deadline = Date.now() + this.timeoutMs;

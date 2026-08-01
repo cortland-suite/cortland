@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { configureFolderApprovals } from "../src/approvals.js";
+import { configureApprovalNotify, configureFolderApprovals } from "../src/approvals.js";
 
 const tmp = () => fs.mkdtempSync(path.join(os.tmpdir(), "setup-approvals-"));
 
@@ -53,5 +53,24 @@ describe("folder approvals setup", () => {
     const result = configureFolderApprovals(icloud, data);
     expect(result.createdReadme).toBe(false);
     expect(fs.readFileSync(readme, "utf8")).toBe("my notes");
+  });
+});
+
+describe("approval notify setup", () => {
+  it("mints an unguessable topic and attaches it to the folder channel", () => {
+    const icloud = tmp();
+    const data = tmp();
+    configureFolderApprovals(icloud, data);
+    const result = configureApprovalNotify(data);
+    expect(result.topic).toMatch(/^honeycrisp-[0-9a-f]{32}$/);
+    const config = JSON.parse(fs.readFileSync(result.configFile, "utf8"));
+    expect(config.approval.notify.url).toBe(`https://ntfy.sh/${result.topic}`);
+    expect(config.approval.channel).toBe("folder"); // untouched
+  });
+
+  it("refuses to attach a ping when the folder channel is not configured", () => {
+    const data = tmp();
+    fs.writeFileSync(path.join(data, "config.json"), JSON.stringify({ live: false }));
+    expect(() => configureApprovalNotify(data)).toThrow(/folder approvals first/);
   });
 });
