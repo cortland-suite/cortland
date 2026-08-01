@@ -268,6 +268,25 @@ deterministic — a read tool must not quietly spend model calls.)
     call. Dangling pointers remain a capture-time concern as before. 6 tests;
     live-verified in a real capture run.
 
+## DISCOVERABILITY (how people find this)
+
+- 2026-08-01 — **Listed in the official MCP Registry**: io.github.
+  honeycrisp-suite/mail and /context, verified against the npm packages via
+  their mcpName fields. Publishing gotchas for next time, hard-won: (a)
+  server.json descriptions max 100 chars; (b) `mcp-publisher login github`
+  (device flow) CANNOT grant org namespaces — known bug since registry
+  v1.8.0 (issue #1468): the GitHub App token can't read org roles. The
+  working path is `login github --token <PAT with read:org>`; org membership
+  must be public and role must be Owner. Four device codes died teaching us
+  this; (c) the org-namespace grant is computed at login, so every
+  permission change needs a fresh login. Also live: GitHub topics on the
+  repo (mcp, apple-mail, ai-agents, local-first…), npm keywords on all six
+  packages, README leads with the npm install path. Still open: community
+  directory submissions (PulseMCP, mcp.so, awesome-mcp-servers PR) — most
+  aggregators crawl the official registry, so those should partly
+  self-populate; check in a week. Claude's curated connector directory
+  stays out of reach until M2's public rung.
+
 ## WATCH ITEMS (landscape)
 
 - 2026-07-29 — **WWDC26 Siri AI overlaps the context layer's territory.** Apple
