@@ -1,0 +1,54 @@
+{
+  "name": "@honeycrisp/notes",
+  "version": "0.1.0",
+  "description": "Apple Notes over MCP, governed: reads fenced and HTML-stripped, creation provenance-stamped, appending gated with native undo — the prior body captured before the write",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/server.js",
+  "mcpName": "io.github.honeycrisp-suite/notes",
+  "bin": {
+    "honeycrisp-notes": "dist/server.js"
+  },
+  "files": [
+    "dist",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "start": "node dist/server.js",
+    "prepublishOnly": "npm run build && npm run test"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "apple-notes",
+    "notes",
+    "macos",
+    "governed"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/honeycrisp-suite/honeycrisp.git",
+    "directory": "packages/notes"
+  },
+  "homepage": "https://github.com/honeycrisp-suite/honeycrisp#readme",
+  "bugs": {
+    "url": "https://github.com/honeycrisp-suite/honeycrisp/issues"
+  },
+  "dependencies": {
+    "@honeycrisp/governed": "^0.1.1",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0",
+    "vitest": "^3.0.0"
+  }
+}

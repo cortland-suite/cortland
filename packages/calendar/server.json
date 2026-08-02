@@ -1,0 +1,20 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.honeycrisp-suite/calendar",
+  "description": "Apple Calendar over MCP: bounded reads, invitation-free event writes, audited with undo.",
+  "repository": {
+    "url": "https://github.com/honeycrisp-suite/honeycrisp",
+    "source": "github"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@honeycrisp/calendar",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}
