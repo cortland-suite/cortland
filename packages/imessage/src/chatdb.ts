@@ -123,6 +123,27 @@ export class ChatDb {
     return result;
   }
 
+  /**
+   * ONE-SHOT, UNFILTERED read for first-run setup only: returns the sender and
+   * destination of the first inbound message after `sinceRowid`, so the wizard
+   * can learn the owner's handle without asking them to run SQL.
+   *
+   * This is the single place in the package that reads a message not yet known
+   * to be the owner's — it returns HANDLES ONLY, never text, and nothing acts
+   * on the result except to write it into config for the human to confirm.
+   */
+  pollAnySender(sinceRowid: number): { owner: string; assistant: string } | undefined {
+    const row = this.db
+      .prepare(
+        `SELECT h.id as handle, m.destination_caller_id as dest
+         FROM message m JOIN handle h ON m.handle_id = h.ROWID
+         WHERE m.ROWID > ? AND m.is_from_me = 0 AND m.destination_caller_id IS NOT NULL
+         ORDER BY m.ROWID ASC LIMIT 1`
+      )
+      .get(sinceRowid) as { handle: string; dest: string } | undefined;
+    return row ? { owner: row.handle, assistant: row.dest } : undefined;
+  }
+
   /** Highest ROWID in the table — the starting cursor, so the bridge only
    *  ever acts on messages that arrive AFTER it starts. */
   latestRowid(): number {

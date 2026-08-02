@@ -8,6 +8,44 @@ API keys.
 
 ---
 
+## Every command, in order
+
+The whole path, if you'd rather not read prose. Each block is explained in the
+section that follows.
+
+```bash
+# 1. the suite
+npm install -g @honeycrisp/setup @honeycrisp/mail @honeycrisp/reminders \
+  @honeycrisp/notes @honeycrisp/calendar @honeycrisp/context
+honeycrisp setup                      # wizard: MCP clients, permissions, folders
+
+# 2. a local model (only for the iMessage bridge)
+brew install ollama
+brew services start ollama            # persistent — survives reboot
+ollama pull gemma4:e2b-it-qat         # 4.3 GB, fits an 8 GB Mac
+
+# 3. the iMessage bridge
+npm install -g @honeycrisp/imessage
+#    → first: create a second Apple ID and sign Messages.app into it (§5.1)
+#    → then: grant Full Disk Access to your terminal AND `which node` (§2)
+honeycrisp-imessage setup --discover \
+  --model gemma4:e2b-it-qat \
+  --name "Your Name" \
+  --about "Central timezone. Prefer brief answers."
+#    → it waits; text the assistant from your phone; both handles are detected
+
+honeycrisp-imessage status            # every line should be green
+honeycrisp-imessage install           # launchd: runs whenever the Mac is on
+
+# 4. allow writes (still asks per action)
+#    edit ~/Library/Application Support/honeycrisp/config.json → "live": true
+```
+
+To stop everything: `honeycrisp-imessage uninstall`, or set `"live": false`
+for an instant read-only mode that needs no restart.
+
+---
+
 ## 0. What you need
 
 | | |
@@ -154,10 +192,24 @@ ollama serve                       # or: brew services start ollama
 ollama pull gemma4:e2b-it-qat      # 4.3 GB — good default for 8 GB Macs
 ```
 
-### 5.3 Find your handle *exactly* as Messages stores it
+### 5.3 Configure — with automatic handle discovery
 
-Don't guess this. Text the assistant account once from your phone, then read
-the handle back out of the database:
+The handle Messages stores is rarely the one you'd type (E.164 `+15551234567`,
+or an Apple ID). So don't type it — let setup watch for your message:
+
+```bash
+honeycrisp-imessage setup --discover --model gemma4:e2b-it-qat \
+  --name "Your Name" --about "Central timezone. Prefer brief answers."
+```
+
+It waits up to three minutes. **Text the assistant's Apple ID from your phone**,
+and it detects both your handle and the assistant account, then writes the
+config. That one read is the only unfiltered look the package ever takes at
+`chat.db`, it returns handles and never text, and from then on only the
+detected handle is obeyed.
+
+<details>
+<summary>Doing it by hand instead</summary>
 
 ```bash
 node -e '
@@ -170,22 +222,21 @@ for (const r of db.prepare(`SELECT h.id sender, m.destination_caller_id dest
 ```
 
 The newest row shows your handle (`from`) and the assistant account (`to`).
-Phone numbers must be **E.164** — `+15551234567`, exactly as printed.
-
-### 5.4 Configure and run
+Phone numbers must be **E.164** — `+15551234567`, exactly as printed. Then:
 
 ```bash
-npm install -g @honeycrisp/imessage
-honeycrisp-imessage setup \
-  --owner "+15551234567" \
-  --assistant "assistant@example.com" \
-  --model gemma4:e2b-it-qat \
-  --name "Your Name" \
-  --about "Central timezone. Prefer brief answers. Kids: …, Work: …"
+honeycrisp-imessage setup --owner "+15551234567" \
+  --assistant "assistant@example.com" --model gemma4:e2b-it-qat
+```
 
+</details>
+
+### 5.4 Check and run
+
+```bash
 honeycrisp-imessage status      # every line should be green
 honeycrisp-imessage run         # foreground; Ctrl-C to stop
-honeycrisp-imessage install     # or: launchd, runs whenever the Mac is on
+honeycrisp-imessage install     # launchd: starts it now and on every boot
 ```
 
 `status` checks the five things that actually break: owner allowlist, assistant

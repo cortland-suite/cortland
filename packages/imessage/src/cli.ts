@@ -9,6 +9,7 @@
  * The bridge answers ONLY the configured owner handles, sends only to the
  * owner, and routes every gated action to a "reply yes <nonce>" text (docs/06).
  */
+import { execFile } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -37,6 +38,14 @@ const require = createRequire(import.meta.url);
 assertCleanArgv(process.argv);
 const dataDir = defaultDataDir("honeycrisp");
 const [, , command, ...rest] = process.argv;
+
+function runCommand(cmd: string, args: string[]): Promise<{ ok: boolean; output: string }> {
+  return new Promise((resolve) => {
+    execFile(cmd, args, { timeout: 30_000 }, (error, stdout, stderr) =>
+      resolve({ ok: !error, output: (stdout + stderr).trim() })
+    );
+  });
+}
 
 function flag(name: string): string | undefined {
   const i = rest.indexOf(`--${name}`);
@@ -104,7 +113,42 @@ function ollamaChat(host: string, model: string) {
   };
 }
 
-if (command === "setup") {
+if (command === "setup" && rest.includes("--discover")) {
+  // The handle a person types is almost never the handle Messages stores
+  // (E.164, or an Apple ID). Rather than make them run SQL, watch for the
+  // message they are about to send and read both sides out of it.
+  console.log(
+    "Text the assistant's Apple ID from your phone now — any message.\n" +
+      "Waiting up to 3 minutes…\n"
+  );
+  const db = new ChatDb(DEFAULT_CHAT_DB);
+  const start = db.latestRowid();
+  const deadline = Date.now() + 180_000;
+  let found: { owner: string; assistant: string } | undefined;
+  while (Date.now() < deadline && !found) {
+    await new Promise((r) => setTimeout(r, 2000));
+    // Deliberately unfiltered: this is the one moment we do not yet know who
+    // the owner is. Nothing is acted on — we only read the handles.
+    const poll = db.pollAnySender(start);
+    if (poll) found = poll;
+  }
+  db.close();
+  if (!found) {
+    console.error("No message arrived. Run it again, or pass --owner/--assistant by hand.");
+    process.exit(1);
+  }
+  const config = saveBridgeConfig(dataDir, {
+    ownerHandles: [found.owner],
+    assistantAccount: found.assistant,
+    model: flag("model"),
+    name: flag("name"),
+    about: flag("about"),
+  });
+  console.log(`Found you:       ${found.owner}`);
+  console.log(`Found assistant: ${found.assistant}`);
+  console.log(`model:           ${config.model.model}`);
+  console.log(`\nOnly ${found.owner} will ever be obeyed. Next: honeycrisp-imessage status`);
+} else if (command === "setup") {
   const owner = flag("owner");
   if (!owner) {
     console.error(
@@ -148,8 +192,9 @@ if (command === "setup") {
   const label = "com.honeycrisp.imessage";
   const plistPath = path.join(os.homedir(), "Library", "LaunchAgents", `${label}.plist`);
   if (command === "uninstall") {
+    await runCommand("launchctl", ["unload", "-w", plistPath]);
     if (fs.existsSync(plistPath)) fs.rmSync(plistPath);
-    console.log(`removed ${plistPath} (run: launchctl unload -w ${plistPath})`);
+    console.log("bridge stopped and removed from launchd.");
   } else {
     const here = path.dirname(fileURLToPath(import.meta.url));
     const template = fs.readFileSync(
@@ -162,11 +207,26 @@ if (command === "setup") {
     if (rendered.includes("REPLACE_")) throw new Error("template render incomplete");
     fs.mkdirSync(path.dirname(plistPath), { recursive: true });
     fs.writeFileSync(plistPath, rendered);
-    console.log(`wrote ${plistPath}\nload it with: launchctl load -w ${plistPath}`);
+    const load = await runCommand("launchctl", ["load", "-w", plistPath]);
+    if (load.ok) {
+      console.log(`installed and started: ${plistPath}`);
+      console.log("The bridge now runs whenever your Mac is on.");
+      console.log(`Stop it with: honeycrisp-imessage uninstall`);
+    } else {
+      console.log(`wrote ${plistPath}`);
+      console.log(`could not start it: ${load.output}`);
+      console.log(`start by hand: launchctl load -w ${plistPath}`);
+    }
   }
 } else {
   console.log(`honeycrisp-imessage v${VERSION}`);
-  console.log("usage: honeycrisp-imessage [setup --owner <handle> | status | run | install | uninstall]");
+  console.log(
+    "usage:\n" +
+      "  honeycrisp-imessage setup --discover [--model m] [--name n] [--about a]\n" +
+      "      text the assistant from your phone; both handles are detected\n" +
+      "  honeycrisp-imessage setup --owner <handle> --assistant <account> [...]\n" +
+      "  honeycrisp-imessage status | run | install | uninstall"
+  );
   process.exit(command ? 2 : 0);
 }
 
