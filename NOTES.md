@@ -279,6 +279,28 @@ deterministic — a read tool must not quietly spend model calls.)
     call. Dangling pointers remain a capture-time concern as before. 6 tests;
     live-verified in a real capture run.
 
+## DIRECTION (settled 2026-08-01, evening session)
+
+- **Identity: the AI layer for the Apple apps Siri forgot — bring your own
+  model, local models first-class.** Coverage beats plumbing: next builds are
+  app packages (Reminders, Calendar writes, Notes), then the iMessage bridge
+  (docs/06). Approval-channel iteration is FROZEN at dialog/folder/elicit/
+  ping until reply-to-approve over iMessage supersedes them.
+- **The iMessage bridge is the killer interface**: a second iCloud account
+  signs into Messages.app ONLY — it is a mouthpiece, not a worker; the Mac
+  does everything as the user's own account. Bridge = chat.db watcher (FDA)
+  + AppleScript send + agent loop (local model per the Q28 harness) +
+  APPROVALS BY REPLY: the framework (never the model) reads the reply from
+  chat.db, verifies allowlisted sender handle + single-use nonce. Send-to-
+  owner is write-safe (talking TO the human is always allowed); messaging
+  anyone else is gated. All inbound content fenced; only the owner's handle
+  is ever instructions.
+- **Vs OpenClaw** (the obvious comparison, 247k stars): it reached the same
+  interface first and validated demand — with a high-severity CVE (Jan
+  2026), rampant prompt injection in the wild, malicious-skill supply chain,
+  and permission gates still on its roadmap. Honeycrisp's pitch in one line:
+  what OpenClaw promises to bolt on someday is what this suite was born as.
+
 ## DISCOVERABILITY (how people find this)
 
 - 2026-08-01 — **Listed in the official MCP Registry**: io.github.
