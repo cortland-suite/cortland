@@ -51,6 +51,7 @@ silently; every step it performs is written to the same audit DB the tools use.
 | [`@honeycrisp/context`](https://www.npmjs.com/package/@honeycrisp/context) | A local context layer: captures mail/calendar *metadata* (pointers, never message bodies), serves briefings and person lookups over MCP, learns from your corrections. |
 | [`@honeycrisp/setup`](https://www.npmjs.com/package/@honeycrisp/setup) | The onboarding wizard above. |
 | [`@honeycrisp/remote`](https://www.npmjs.com/package/@honeycrisp/remote) | Gateway serving the suite over MCP streamable HTTP — loopback-only, bearer tokens (read/write scopes), audit rows that name who asked. Share the port over your own private network (e.g. Tailscale) to reach it from your other devices. |
+| [`@honeycrisp/reminders`](https://www.npmjs.com/package/@honeycrisp/reminders) | Apple Reminders: fenced reads and search, provenance-stamped creation, gated completion and deletion with native undo. |
 
 ## How approvals work
 
