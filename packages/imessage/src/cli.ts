@@ -74,7 +74,18 @@ function ollamaChat(host: string, model: string) {
     const res = await fetch(`${host}/api/chat`, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ model, messages, tools, stream: false }),
+      body: JSON.stringify({
+        model,
+        messages,
+        tools,
+        stream: false,
+        // Ollama defaults to a 4096-token window. The mounted tool schemas
+        // alone are ~2.4k of that (measured 2026-08-02), leaving no room for
+        // conversation or tool output — the model looked amnesiac because it
+        // effectively was. Raise it; keep it modest so an 8 GB Mac can hold
+        // the model and the KV cache at once.
+        options: { num_ctx: 16384 },
+      }),
     });
     const body = (await res.json()) as { message?: ChatMessage; error?: string };
     if (body.error) throw new Error(`model: ${body.error}`);
@@ -95,6 +106,7 @@ if (command === "setup") {
   const config = saveBridgeConfig(dataDir, {
     ownerHandles: owner.split(",").map((h) => h.trim()),
     model: flag("model"),
+    assistantAccount: flag("assistant"),
   });
   console.log(`owner allowlist: ${config.ownerHandles.join(", ")}`);
   console.log(`model: ${config.model.model} @ ${config.model.host}`);
@@ -147,6 +159,9 @@ if (command === "setup") {
 
 async function status(config: ReturnType<typeof loadBridgeConfig>): Promise<void> {
   console.log(`owner allowlist: ${config.ownerHandles.join(", ")}`);
+  console.log(
+    `assistant account: ${config.assistantAccount ?? "(not pinned — reads are handle-filtered only)"}`
+  );
   console.log(`live mode: ${loadConfig(dataDir).live ? "ON (writes can execute)" : "off (dry-run)"}`);
   let db: ChatDb | undefined;
   try {
@@ -189,6 +204,7 @@ async function run(config: ReturnType<typeof loadBridgeConfig>): Promise<void> {
       chatdb,
       sender,
       ownerHandles: config.ownerHandles,
+      assistantAccount: config.assistantAccount,
       timeoutSeconds: config.approvalTimeoutSeconds,
     }),
     getConfig: () => loadConfig(dataDir),
@@ -200,10 +216,12 @@ async function run(config: ReturnType<typeof loadBridgeConfig>): Promise<void> {
     chatdb,
     sender,
     ownerHandles: config.ownerHandles,
+    assistantAccount: config.assistantAccount,
     audit,
     version: VERSION,
     pollSeconds: config.pollSeconds,
     log,
-    think: (text) => runBrain(text, { tools, deps, chat }),
+    history: [],
+    think: (text, history) => runBrain(text, { tools, deps, chat, history }),
   });
 }

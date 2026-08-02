@@ -21,6 +21,10 @@ import path from "node:path";
 
 export interface BridgeConfig {
   ownerHandles: string[];
+  /** The assistant account's handle (its Apple ID / phone as Messages stores
+   *  it). Pins reads to messages addressed TO the assistant — law 3 made
+   *  structural. Optional only for back-compat; setup always writes it. */
+  assistantAccount?: string;
   model: { type: "ollama"; model: string; host: string };
   maxPerHour: number;
   pollSeconds: number;
@@ -56,6 +60,10 @@ export function loadBridgeConfig(dataDir: string): BridgeConfig {
   const model = (b.model ?? {}) as Record<string, unknown>;
   return {
     ownerHandles: handles.map((h) => h.trim()),
+    assistantAccount:
+      typeof b.assistantAccount === "string" && b.assistantAccount.trim() !== ""
+        ? b.assistantAccount.trim()
+        : undefined,
     model: {
       type: "ollama",
       model: typeof model.model === "string" ? model.model : "gemma4:e4b",
@@ -70,7 +78,7 @@ export function loadBridgeConfig(dataDir: string): BridgeConfig {
 /** Write/merge the imessage block, preserving everything else in config.json. */
 export function saveBridgeConfig(
   dataDir: string,
-  patch: { ownerHandles?: string[]; model?: string }
+  patch: { ownerHandles?: string[]; model?: string; assistantAccount?: string }
 ): BridgeConfig {
   fs.mkdirSync(dataDir, { recursive: true });
   const file = path.join(dataDir, "config.json");
@@ -86,6 +94,7 @@ export function saveBridgeConfig(
   const next: Record<string, unknown> = { ...existing };
   if (patch.ownerHandles) next.ownerHandles = patch.ownerHandles;
   if (patch.model) next.model = { type: "ollama", model: patch.model };
+  if (patch.assistantAccount) next.assistantAccount = patch.assistantAccount;
   config.imessage = next;
   fs.writeFileSync(file, JSON.stringify(config, null, 2) + "\n");
   return loadBridgeConfig(dataDir);

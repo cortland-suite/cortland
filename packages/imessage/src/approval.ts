@@ -28,6 +28,7 @@ export interface ImessageApprovalOptions {
   chatdb: ChatDb;
   sender: OwnerSender;
   ownerHandles: string[];
+  assistantAccount?: string;
   timeoutSeconds?: number;
   pollSeconds?: number;
   /** Injectable clock/sleep for tests. */
@@ -71,7 +72,7 @@ export class ImessageApprovalChannel implements ApprovalChannel {
     const no = new RegExp(`^\\s*no\\s+${nonce}\\s*$`, "i");
     while (this.now() < deadline) {
       await this.sleep(Math.min(this.pollMs, Math.max(deadline - this.now(), 1)));
-      const poll = this.opts.chatdb.poll(cursor, this.opts.ownerHandles);
+      const poll = this.opts.chatdb.poll(cursor, this.opts.ownerHandles, this.opts.assistantAccount);
       cursor = poll.cursor;
       for (const message of poll.messages) {
         if (yes.test(message.text)) {

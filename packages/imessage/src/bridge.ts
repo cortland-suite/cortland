@@ -1,4 +1,5 @@
 import type { AuditStore } from "@honeycrisp/governed";
+import type { ChatMessage } from "./brain.js";
 import type { ChatDb, InboundMessage } from "./chatdb.js";
 import type { OwnerSender } from "./send.js";
 
@@ -18,14 +19,27 @@ export interface BridgeDeps {
   chatdb: ChatDb;
   sender: OwnerSender;
   ownerHandles: string[];
+  assistantAccount?: string;
   audit: AuditStore;
   version: string;
-  /** Answer one user message. Errors are caught by the loop. */
-  think: (text: string) => Promise<string>;
+  /** Answer one user message, given the recent conversation. Errors are
+   *  caught by the loop. */
+  think: (text: string, history: ChatMessage[]) => Promise<string>;
+  /** Rolling conversation memory, owned by the caller so it survives ticks.
+   *  Trimmed to `historyTurns` (default 6) entries — a small local model's
+   *  context is scarce. */
+  history?: ChatMessage[];
+  historyTurns?: number;
   log?: (message: string) => void;
   /** Guard against a runaway thread: max messages handled per tick. */
   maxPerTick?: number;
+  /** Text an immediate ack before thinking (default true). A local model can
+   *  take tens of seconds; without an ack, "working" and "broken" look
+   *  identical from the phone. Costs one extra send against the law-4 cap. */
+  ackFirst?: boolean;
 }
+
+export const ACK_TEXT = "Received — working on it…";
 
 export interface TickResult {
   cursor: number;
@@ -40,7 +54,7 @@ const DECISION_RE = /^\s*(yes|no)\s+[0-9a-f]{6}\s*$/i;
 
 export async function tick(cursor: number, deps: BridgeDeps): Promise<TickResult> {
   const log = deps.log ?? (() => {});
-  const poll = deps.chatdb.poll(cursor, deps.ownerHandles);
+  const poll = deps.chatdb.poll(cursor, deps.ownerHandles, deps.assistantAccount);
   const result: TickResult = {
     cursor: poll.cursor,
     handled: 0,
@@ -88,9 +102,20 @@ async function handleOne(
     dryRun: false,
     toolVersion: deps.version,
   };
+  if (deps.ackFirst !== false) {
+    const ack = await deps.sender.send(ACK_TEXT);
+    deps.audit.record({
+      ...base,
+      tool: "imessage_ack",
+      outcome: ack.ok ? "ok" : "error",
+      detail: ack.detail,
+    });
+  }
+
+  const history = deps.history ?? [];
   let reply: string;
   try {
-    reply = await deps.think(message.text);
+    reply = await deps.think(message.text, [...history]);
   } catch (err) {
     result.errors += 1;
     deps.audit.record({
@@ -103,6 +128,13 @@ async function handleOne(
       "Something went wrong handling that — nothing was changed. " +
       "(The failure is in the audit log.)";
   }
+
+  // Remember this exchange so a follow-up like "10am central" makes sense.
+  history.push({ role: "user", content: message.text });
+  history.push({ role: "assistant", content: reply });
+  const keep = (deps.historyTurns ?? 6) * 2;
+  if (history.length > keep) history.splice(0, history.length - keep);
+  if (deps.history === undefined) deps.history = history;
 
   const sent = await deps.sender.send(reply);
   deps.audit.record({

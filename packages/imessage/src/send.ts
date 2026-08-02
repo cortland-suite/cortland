@@ -1,7 +1,7 @@
-import { runJxa } from "@honeycrisp/governed";
+import { execFile } from "node:child_process";
 
 /**
- * The outbound half of the bridge: AppleScript send via Messages.app.
+ * The outbound half of the bridge: sending via Messages.app.
  *
  * There is exactly ONE recipient class in this module: the owner. No general
  * send exists anywhere in the package — messaging anyone else is not gated,
@@ -13,6 +13,12 @@ import { runJxa } from "@honeycrisp/governed";
  * the callers: a token bucket capped well below anything Apple could read
  * as automation abuse. When the bucket is empty the send fails closed —
  * the bridge goes quiet rather than bursty.
+ *
+ * AppleScript, not JXA: Messages' JXA bridge lost `services.whose()` on
+ * current macOS (field-verified 2026-08-02, TypeError at runtime), while the
+ * AppleScript form has been stable for a decade. That changes the escaping
+ * rules — see `escapeAppleScript`, which is the security-critical function
+ * in this file.
  */
 
 export interface SendResult {
@@ -26,7 +32,7 @@ export class OwnerSender {
   constructor(
     private ownerHandle: string,
     private maxPerHour = 30,
-    private exec: (script: string, timeoutMs: number) => Promise<string> = runJxa,
+    private exec: (script: string, timeoutMs: number) => Promise<string> = runAppleScript,
     private now: () => number = Date.now
   ) {}
 
@@ -41,9 +47,8 @@ export class OwnerSender {
     if (this.remainingThisHour() <= 0) {
       return { ok: false, detail: "rate-cap reached; staying quiet (law 4)" };
     }
-    const script = buildSendScript(this.ownerHandle, text);
     try {
-      await this.exec(script, 60_000);
+      await this.exec(buildSendScript(this.ownerHandle, text), 60_000);
       this.timestamps.push(this.now());
       return { ok: true };
     } catch (err) {
@@ -52,14 +57,38 @@ export class OwnerSender {
   }
 }
 
-/** Exposed for tests: user text enters the script only via JSON.stringify. */
+/** Exposed for tests: both values enter the script only through the escaper. */
 export function buildSendScript(handle: string, text: string): string {
-  return `
-    const Messages = Application("Messages");
-    const service = Messages.services.whose({ serviceType: "iMessage" })()[0];
-    const buddy = service.participants.whose({ handle: ${JSON.stringify(handle)} })()[0]
-      ?? Messages.participants.whose({ handle: ${JSON.stringify(handle)} })()[0];
-    Messages.send(${JSON.stringify(text)}, { to: buddy });
-    "sent";
-  `;
+  return `tell application "Messages"
+  set svc to 1st service whose service type = iMessage
+  set bud to buddy "${escapeAppleScript(handle)}" of svc
+  send "${escapeAppleScript(text)}" to bud
+end tell`;
+}
+
+/**
+ * AppleScript string-literal escaping. AppleScript has no `\n` escape and no
+ * template syntax, so the rules are: backslash and quote get escaped, control
+ * characters are flattened to spaces, and real newlines become a concatenated
+ * `return` — which keeps a multi-line reply inside the literal instead of
+ * terminating it. Anything that would end the string early is neutralized
+ * here; nothing else in this package builds Messages scripts.
+ */
+export function escapeAppleScript(text: string): string {
+  return text
+    .replace(/\\/g, "\\\\")
+    .replace(/"/g, '\\"')
+    // every C0 control byte and DEL except newline — not just the whitespace
+    // ones; none of them belong in a message and none should reach osascript
+    .replace(/[\x00-\x09\x0B-\x1F\x7F]/g, " ")
+    .replace(/\n/g, '" & return & "');
+}
+
+function runAppleScript(script: string, timeoutMs: number): Promise<string> {
+  return new Promise((resolve, reject) => {
+    execFile("osascript", ["-e", script], { timeout: timeoutMs }, (error, stdout) => {
+      if (error) reject(error);
+      else resolve(stdout);
+    });
+  });
 }

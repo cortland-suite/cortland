@@ -56,8 +56,20 @@ export class ChatDb {
    * New inbound messages from allowlisted handles since the cursor.
    * Handles are compared case-insensitively and phone numbers must be in
    * E.164 (+1…) exactly as Messages stores them.
+   *
+   * `assistantAccount` (recommended) restricts the scan to messages ADDRESSED
+   * TO that account — `message.destination_caller_id`. This is what makes law
+   * 3 structural rather than incidental: the owner's personal account is
+   * usually signed into the same Messages app, and its conversations share
+   * this database. With the destination pinned, a message the owner sends to
+   * anyone else — or that arrives on their personal account — is not merely
+   * unmatched, it is outside the query.
    */
-  poll(sinceRowid: number, ownerHandles: string[]): PollResult {
+  poll(
+    sinceRowid: number,
+    ownerHandles: string[],
+    assistantAccount?: string
+  ): PollResult {
     const allow = new Set(ownerHandles.map((h) => h.toLowerCase()));
     // The allowlist is applied in JS on the handle VALUE after a bounded SQL
     // window scan: chat.db collation quirks make SQL-side case folding on
@@ -70,10 +82,11 @@ export class ChatDb {
          FROM message m
          JOIN handle h ON m.handle_id = h.ROWID
          WHERE m.ROWID > ? AND m.is_from_me = 0
+           AND (? IS NULL OR m.destination_caller_id = ?)
          ORDER BY m.ROWID ASC
          LIMIT 500`
       )
-      .all(sinceRowid) as Array<{
+      .all(sinceRowid, assistantAccount ?? null, assistantAccount ?? null) as Array<{
       rowid: number;
       guid: string;
       text: string | null;

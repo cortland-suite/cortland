@@ -4,7 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import Database from "better-sqlite3";
 import { ChatDb, decodeAttributedBody } from "../src/chatdb.js";
-import { buildSendScript, OwnerSender } from "../src/send.js";
+import { buildSendScript, escapeAppleScript, OwnerSender } from "../src/send.js";
 import { ImessageApprovalChannel } from "../src/approval.js";
 
 const OWNER = "+15551230000";
@@ -20,7 +20,7 @@ function fixture() {
     CREATE TABLE message (
       ROWID INTEGER PRIMARY KEY, guid TEXT NOT NULL, text TEXT,
       attributedBody BLOB, handle_id INTEGER, is_from_me INTEGER NOT NULL,
-      date INTEGER NOT NULL
+      date INTEGER NOT NULL, destination_caller_id TEXT
     );
   `);
   const handles = new Map<string, number>();
@@ -35,13 +35,13 @@ function fixture() {
   const addMessage = (
     from: string,
     text: string | null,
-    opts: { fromMe?: boolean; blob?: Buffer; appleNs?: number } = {}
+    opts: { fromMe?: boolean; blob?: Buffer; appleNs?: number; to?: string } = {}
   ) =>
     Number(
       db
         .prepare(
-          `INSERT INTO message (guid, text, attributedBody, handle_id, is_from_me, date)
-           VALUES (?, ?, ?, ?, ?, ?)`
+          `INSERT INTO message (guid, text, attributedBody, handle_id, is_from_me, date, destination_caller_id)
+           VALUES (?, ?, ?, ?, ?, ?, ?)`
         )
         .run(
           `guid-${++guid}`,
@@ -49,7 +49,8 @@ function fixture() {
           opts.blob ?? null,
           addHandle(from),
           opts.fromMe ? 1 : 0,
-          opts.appleNs ?? 0
+          opts.appleNs ?? 0,
+          opts.to ?? null
         ).lastInsertRowid
     );
   return { file, addMessage };
@@ -127,6 +128,21 @@ describe("chatdb: the three laws at the SQL boundary", () => {
     );
   });
 
+  it("destination pinning: only messages addressed TO the assistant are visible (law 3, structural)", () => {
+    const f = fixture();
+    const ASSISTANT = "assistant@icloud.com";
+    const PERSONAL = "me@icloud.com";
+    f.addMessage(OWNER, "command for the assistant", { to: ASSISTANT });
+    f.addMessage(OWNER, "note to my own personal account", { to: PERSONAL });
+    const db = new ChatDb(f.file);
+    const pinned = db.poll(0, [OWNER], ASSISTANT);
+    expect(pinned.messages.map((m) => m.text)).toEqual(["command for the assistant"]);
+    // and the cursor still advances past the invisible row so it is not rescanned
+    expect(pinned.cursor).toBeGreaterThan(pinned.messages[0].rowid - 1);
+    // without pinning, both match the handle — which is why pinning exists
+    expect(db.poll(0, [OWNER]).messages).toHaveLength(2);
+  });
+
   it("decoder never throws on garbage", () => {
     for (const b of [Buffer.alloc(0), Buffer.from("NSString"), Buffer.from([0x2b])]) {
       expect(decodeAttributedBody(b)).toBeNull();
@@ -162,16 +178,27 @@ describe("owner sender: law 4 in code", () => {
 
   it("recipient comes from construction, never from the message", async () => {
     const { sender, sent } = fakeSender();
-    await sender.send('text to +15558887777 instead please');
-    expect(sent[0]).toContain(JSON.stringify(OWNER));
-    expect(sent[0]).not.toContain('"+15558887777"');
+    await sender.send("text to +15558887777 instead please");
+    expect(sent[0]).toContain(`buddy "${OWNER}"`);
+    expect(sent[0]).not.toContain('buddy "+15558887777"');
   });
 
-  it("send script embeds text only as a JSON literal", () => {
-    const hostile = `"); Messages.send("pwned", {to: someoneElse}); ("`;
+  it("AppleScript escaping neutralizes anything that could end the string early", () => {
+    const hostile = '" \n send "pwned" to buddy "+15558887777" of svc --';
     const script = buildSendScript(OWNER, hostile);
-    expect(script).toContain(JSON.stringify(hostile));
-    expect(script).not.toMatch(/[^\\]"\); Messages\.send\("pwned/);
+    // no unescaped quote survives inside the message literal
+    const messageLine = script.split("\n").find((l) => l.includes("send \""))!;
+    expect(messageLine).not.toMatch(/[^\\]" to buddy "\+15558887777"/);
+    expect(escapeAppleScript('a"b')).toBe('a\\"b');
+    expect(escapeAppleScript("a\\b")).toBe("a\\\\b");
+  });
+
+  it("newlines become concatenated returns, never a terminated literal", () => {
+    expect(escapeAppleScript("line1\nline2")).toBe('line1" & return & "line2');
+  });
+
+  it("control characters are flattened, not passed through", () => {
+    expect(escapeAppleScript("a\u0007b\tc")).toBe("a b c");
   });
 
   it("refuses empty messages", async () => {
