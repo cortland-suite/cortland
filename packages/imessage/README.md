@@ -7,9 +7,16 @@ your real mail, reminders, notes, and calendar. Nothing leaves the Mac, and
 nothing consequential happens without your reply.
 
 ```
-honeycrisp-imessage setup --owner "+15551234567" --model gemma4:e4b
+honeycrisp-imessage setup \
+  --owner "+15551234567" \
+  --assistant "assistant@example.com" \
+  --model gemma4:e2b-it-qat \
+  --name "Your Name" \
+  --about "Central timezone. Prefer brief answers."
+
 honeycrisp-imessage status     # preflight: config, chat.db access, model, tools
-honeycrisp-imessage run        # the bridge (or: install → launchd)
+honeycrisp-imessage run        # foreground
+honeycrisp-imessage install    # launchd: runs whenever the Mac is on
 ```
 
 ## The four laws (enforced in code, not prompts — see docs/06)
@@ -25,6 +32,18 @@ honeycrisp-imessage run        # the bridge (or: install → launchd)
    startup — no model output can redirect a message.
 4. **Rate discipline.** A per-hour send cap, replies only, never initiates.
    The traffic pattern is a person texting one contact, by construction.
+
+## Living with it
+
+- **"Received — working on it…"** lands in seconds; a small local model can
+  take 30–60 to answer. Past 75% of the context window the ack says so, and at
+  95% the bridge clears the thread itself and asks you to resend.
+- **"what can you do"** is answered from the tools actually mounted — no model
+  call, so it cannot overclaim or hallucinate.
+- **"clear context"** (or "new topic", "reset") starts fresh, instantly.
+- Only the tools a message plausibly needs are sent to the model: a reminder
+  request ships ~410 tokens of schema instead of ~2,400, leaving the window
+  for the conversation.
 
 ## Approvals by reply
 
@@ -44,7 +63,9 @@ the folder channel with the UX of texting back.
    stays yours). This account is a mouthpiece — it owns no data.
 2. **Full Disk Access** for the host process (reads `chat.db`).
 3. **Automation → Messages** (sending).
-4. `ollama serve` with a tool-capable model pulled (Gemma 4 recommended).
+4. `ollama serve` with a tool-capable model pulled. `gemma4:e2b-it-qat`
+   (4.3 GB) is the recommended default and fits an 8 GB Mac; the 9.6 GB
+   `gemma4:e4b` will thrash it. Gemma 3 has no tool support in Ollama.
 
 Reads are free; writes stay dry-run until you enable live mode, and every
 action — handled, replied, ignored, approved, refused — is a row in the
