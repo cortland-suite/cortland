@@ -96,8 +96,15 @@ export const reminderComplete = defineTool({
     const current = JSON.parse(await run(buildGetScript(args.id)));
     return { restore: "reminder_complete", args: { id: args.id, completed: current.completed } };
   },
-  preview: (args: { id: string; completed?: boolean }) =>
-    `Would mark reminder ${args.id} as ${args.completed === false ? "not completed" : "completed"}.`,
+  preview: async (args: { id: string; completed?: boolean }) => {
+    const state = args.completed === false ? "NOT completed" : "completed";
+    try {
+      const r = JSON.parse(await run(buildGetScript(args.id)));
+      return `Would mark "${r.name}"${r.list ? ` (${r.list})` : ""} as ${state}.`;
+    } catch {
+      return `Would mark reminder ${args.id} as ${state}.`;
+    }
+  },
   handler: async (args: { id: string; completed?: boolean }) => ({
     content: await run(buildSetCompletedScript(args.id, args.completed !== false)),
   }),
@@ -117,7 +124,23 @@ export const reminderDelete = defineTool({
     const snapshot = JSON.parse(await run(buildGetScript(args.id)));
     return { restore: "reminder_create", args: snapshot };
   },
-  preview: (args: { id: string }) => `Would permanently delete reminder ${args.id}.`,
+  // An approval you cannot evaluate is not consent: describe the actual
+  // reminder, never just its opaque id (field-verified 2026-08-02 — a
+  // deletion was approved blind because the prompt showed only a UUID).
+  preview: async (args: { id: string }) => {
+    try {
+      const r = JSON.parse(await run(buildGetScript(args.id)));
+      return (
+        `Would permanently DELETE the reminder "${r.name}"` +
+        (r.list ? ` from the "${r.list}" list` : "") +
+        (r.due ? `, due ${new Date(r.due).toLocaleString()}` : ", with no due date") +
+        (r.completed ? " (already completed)" : "") +
+        "."
+      );
+    } catch {
+      return `Would permanently delete reminder ${args.id} (details unreadable).`;
+    }
+  },
   handler: async (args: { id: string }) => ({
     content: await run(buildDeleteScript(args.id)),
   }),

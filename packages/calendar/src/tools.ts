@@ -131,8 +131,22 @@ export const eventDelete = defineTool({
     );
     return { restore: "event_create", args: snapshot };
   },
-  preview: (args: { calendar: string; uid: string }) =>
-    `Would permanently delete event ${args.uid} from calendar "${args.calendar}".`,
+  // Describe the actual event: an approval prompt showing only a uid is not
+  // something a human can meaningfully consent to.
+  preview: async (args: { calendar: string; uid: string }) => {
+    try {
+      const e = JSON.parse(await run(buildGetEventScript(args.calendar, args.uid)));
+      return (
+        `Would permanently DELETE "${e.summary ?? "(untitled)"}" from the ` +
+        `"${args.calendar}" calendar` +
+        (e.start ? `, starting ${new Date(e.start).toLocaleString()}` : "") +
+        (e.location ? `, at ${e.location}` : "") +
+        "."
+      );
+    } catch {
+      return `Would permanently delete event ${args.uid} from "${args.calendar}" (details unreadable).`;
+    }
+  },
   handler: async (args: { calendar: string; uid: string }) => ({
     content: await run(buildDeleteScript(args.calendar, args.uid)),
   }),

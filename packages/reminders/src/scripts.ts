@@ -104,7 +104,15 @@ export function buildDeleteScript(id: string): string {
   return `
     const app = Application("Reminders");
     const r = app.reminders.byId(${JSON.stringify(id)});
-    const snapshot = { name: r.name(), list: r.container().name() };
+    // Full snapshot BEFORE deleting: it is both the undo material and what
+    // the assistant tells the human it removed ("deleted X, due Y").
+    const snapshot = {
+      name: r.name(),
+      list: r.container().name(),
+      due: r.dueDate() ? r.dueDate().toISOString() : null,
+      completed: r.completed(),
+      notes: r.body() || null
+    };
     app.delete(r);
     JSON.stringify({ deleted: true, was: snapshot });
   `;
