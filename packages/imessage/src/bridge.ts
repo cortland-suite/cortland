@@ -43,7 +43,7 @@ export interface BridgeDeps {
 
 export const ACK_TEXT = "Received — working on it…";
 
-/** Warn from 70% of the window; shout past 90%. Below that, say nothing —
+/** Warn from 75% of the window; shout past 90%. Below that, say nothing —
  *  a status readout on every message is noise, not information. */
 export function ackText(used?: number, limit?: number): string {
   if (!used || !limit || used <= 0) return ACK_TEXT;
@@ -51,7 +51,7 @@ export function ackText(used?: number, limit?: number): string {
   if (pct >= 90) {
     return `${ACK_TEXT} (context ${pct}% full — say "new topic" to clear it)`;
   }
-  if (pct >= 70) return `${ACK_TEXT} (context ${pct}% full)`;
+  if (pct >= 75) return `${ACK_TEXT} (context ${pct}% full)`;
   return ACK_TEXT;
 }
 
@@ -64,6 +64,15 @@ export interface TickResult {
 
 /** Replies to approval prompts are consumed by the approval channel, not the
  *  brain: a bare "yes 4f2a1c" is a decision, never a question. */
+/** Phrases that reset the thread. Kept generous — a human under a full
+ *  context should not have to guess the magic words. */
+export const RESET_RE =
+  /^\s*(new topic|start over|reset|clear|clear (the )?(context|history|chat))\s*[.!]?\s*$/i;
+
+/** At or above this share of the window, the bridge clears the thread itself
+ *  rather than letting answers quietly degrade. */
+export const AUTO_CLEAR_AT = 0.95;
+
 const DECISION_RE = /^\s*(yes|no)\s+[0-9a-f]{6}\s*$/i;
 
 export async function tick(cursor: number, deps: BridgeDeps): Promise<TickResult> {
@@ -129,13 +138,32 @@ async function handleOne(
 
   const history = deps.history ?? [];
   // An explicit reset the human can type when the window fills.
-  if (/^\s*(new topic|start over|clear (context|history))\s*[.!]?\s*$/i.test(message.text)) {
+  if (RESET_RE.test(message.text)) {
     history.splice(0, history.length);
     if (deps.history === undefined) deps.history = history;
     await deps.sender.send("Cleared — starting fresh.");
     deps.audit.record({ ...base, tool: "imessage_reset", outcome: "ok" });
     return;
   }
+  // Full window: clear it and say so, rather than thinking with a context
+  // that has no room left and producing a degraded answer.
+  const status = deps.contextStatus?.();
+  if (status && status.limit > 0 && status.used / status.limit >= AUTO_CLEAR_AT && history.length > 0) {
+    history.splice(0, history.length);
+    if (deps.history === undefined) deps.history = history;
+    await deps.sender.send(
+      "My context was full, so I cleared our earlier conversation. " +
+        "Send that again and I'll have room to work."
+    );
+    deps.audit.record({
+      ...base,
+      tool: "imessage_reset",
+      outcome: "ok",
+      detail: `auto-cleared at ${Math.round((status.used / status.limit) * 100)}% of window`,
+    });
+    return;
+  }
+
   let reply: string;
   try {
     reply = await deps.think(message.text, [...history]);

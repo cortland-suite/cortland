@@ -17,7 +17,7 @@ import {
   shapeToJsonSchema,
   type ChatMessage,
 } from "../src/brain.js";
-import { ACK_TEXT, ackText, tick, type BridgeDeps } from "../src/bridge.js";
+import { ACK_TEXT, ackText, RESET_RE, tick, type BridgeDeps } from "../src/bridge.js";
 import { ChatDb } from "../src/chatdb.js";
 import { loadBridgeConfig, saveBridgeConfig } from "../src/config.js";
 import { OwnerSender } from "../src/send.js";
@@ -297,7 +297,8 @@ describe("bridge daemon", () => {
     expect(ackText(undefined, undefined)).toBe(ACK_TEXT);
     expect(ackText(0, 16384)).toBe(ACK_TEXT);
     expect(ackText(5000, 16384)).toBe(ACK_TEXT); // 31% — no noise
-    expect(ackText(11500, 16384)).toContain("70% full");
+    expect(ackText(11000, 16384)).toBe(ACK_TEXT); // 67% — still quiet
+    expect(ackText(12500, 16384)).toContain("76% full");
     expect(ackText(15000, 16384)).toContain("92% full");
     expect(ackText(15000, 16384)).toContain("new topic");
   });
@@ -323,6 +324,33 @@ describe("bridge daemon", () => {
     expect(r.deps.history).toHaveLength(0);
     expect(r.sentTexts.some((s) => s.includes("starting fresh"))).toBe(true);
     expect(r.audit.list(5).some((x) => x.tool === "imessage_reset")).toBe(true);
+  });
+
+  it("a full context clears itself and tells the human to resend", async () => {
+    let thought = 0;
+    const r = bridgeRig(async () => {
+      thought += 1;
+      return "x";
+    });
+    r.deps.history = [{ role: "user", content: "old" }, { role: "assistant", content: "older" }];
+    r.deps.contextStatus = () => ({ used: 15800, limit: 16384 }); // 96%
+    r.f.add(OWNER, "what did I miss today?");
+    await tick(0, r.deps);
+    expect(thought).toBe(0); // never thought with a full window
+    expect(r.deps.history).toHaveLength(0);
+    expect(r.sentTexts.some((s) => s.includes("cleared our earlier conversation"))).toBe(true);
+    const row = r.audit.list(9).find((x) => x.tool === "imessage_reset");
+    expect(row?.detail).toContain("96%");
+  });
+
+  it("every reset phrasing works — a stuck human should not guess magic words", () => {
+    for (const phrase of [
+      "new topic", "New Topic.", "start over", "reset",
+      "clear context", "clear the context", "clear history", "clear chat", "clear",
+    ]) {
+      expect(RESET_RE.test(phrase), phrase).toBe(true);
+    }
+    expect(RESET_RE.test("clear my calendar for tomorrow")).toBe(false);
   });
 
   it("ackFirst:false keeps the single-reply behavior for tight rate budgets", async () => {
