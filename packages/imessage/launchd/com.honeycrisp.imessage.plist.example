@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <!-- The Honeycrisp iMessage bridge. Answers ONLY the configured owner
+       handles; sends only to the owner; gated actions ask by reply. -->
+  <key>Label</key>
+  <string>com.honeycrisp.imessage</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>REPLACE_NODE_PATH</string>
+    <string>REPLACE_CLI_PATH</string>
+    <string>run</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+  <key>StandardErrorPath</key>
+  <string>/tmp/com.honeycrisp.imessage.log</string>
+</dict>
+</plist>
