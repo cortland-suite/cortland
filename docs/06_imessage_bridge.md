@@ -70,6 +70,35 @@ model cannot write to) with the UX of texting "yes 4f2a1c".
   approval outcome is an audit row.
 - **cli.ts** — `honeycrisp-imessage run | status | test`, launchd template.
 
+## The fourth law (added after the landscape research, same day)
+
+4. **Rate discipline is a safety property.** Apple has permanently banned
+   iMessage automation that looked like spam (Lindy: 10k msgs/12h through
+   rotated numbers, banned on launch day, no appeal). The bridge's traffic
+   pattern must be indistinguishable from a person texting one contact:
+   replies only within the owner thread, a hard hourly send cap, no
+   initiation to any handle but the owner, backoff when the human goes
+   quiet. Enforced in code and tested — not tuned for growth, tuned for
+   being boringly personal.
+
+## Landscape (research 2026-08-01; full matrix in the session log)
+
+Two camps, each holding half the pieces. Cloud services — Poke (the only
+one on Apple's sanctioned Messages-for-Business rails, $19–199/mo), Arlo
+($16–100/mo, markets approval gates + audit), Lindy, Sidekicks, Olly — can
+NEVER reach Apple-native data; their integrations are Gmail/Notion/Slack
+OAuth, their transport is mostly gray-market Mac-relay farms under an
+announced Apple compliance deadline. OpenClaw (open-source) has the Mac,
+the owner's own iCloud iMessage, and local models via Ollama — and ships
+ungoverned: no dry-run, no per-action gate, no ledger; its 2026 security
+record (CVE 8.8, injection incidents, "uninstall now" advisories) is the
+cautionary tale. The full combination this doc specifies — local model,
+Mac-side, Apple-native data, per-action approval, audit — is UNOCCUPIED.
+User complaints across the cohort map one-to-one onto this design's
+choices: channel fragility (we ride the owner's own account, one thread),
+privacy unease (nothing leaves the Mac), pricing tricks (free), and no
+recorded demand-side rejection of approval gates — Arlo sells them.
+
 ## What must be true on the Mac (operator setup, one time)
 
 1. A second Apple ID, signed into **Messages.app only** (Mac's system iCloud
