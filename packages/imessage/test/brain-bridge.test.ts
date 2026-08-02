@@ -17,7 +17,9 @@ import {
   shapeToJsonSchema,
   type ChatMessage,
 } from "../src/brain.js";
-import { ACK_TEXT, ackText, RESET_RE, tick, type BridgeDeps } from "../src/bridge.js";
+import { ACK_TEXT, ackText, HELP_RE, RESET_RE, tick, type BridgeDeps } from "../src/bridge.js";
+import { capabilitiesText } from "../src/capabilities.js";
+import { selectTools } from "../src/select.js";
 import { ChatDb } from "../src/chatdb.js";
 import { loadBridgeConfig, saveBridgeConfig } from "../src/config.js";
 import { OwnerSender } from "../src/send.js";
@@ -353,6 +355,37 @@ describe("bridge daemon", () => {
     expect(RESET_RE.test("clear my calendar for tomorrow")).toBe(false);
   });
 
+  it('"what can you do" is answered from the mounted tools, without the model', async () => {
+    let thought = 0;
+    const r = bridgeRig(async () => {
+      thought += 1;
+      return "x";
+    });
+    r.deps.capabilities = () => "• Reminders: create, delete";
+    r.f.add(OWNER, "what can you do?");
+    await tick(0, r.deps);
+    expect(thought).toBe(0);
+    expect(r.sentTexts[0]).toContain("Reminders: create, delete");
+    expect(r.sentTexts.some((s) => s.includes(ACK_TEXT))).toBe(false); // instant, no ack
+    expect(r.audit.list(5).some((x) => x.tool === "imessage_help")).toBe(true);
+  });
+
+  it("the capability text is derived from real tools, so it cannot overclaim", () => {
+    const text = capabilitiesText([readTool, gatedTool(() => {})]);
+    expect(text).toContain("• Test:");
+    expect(text).toContain("read");
+    expect(text).toContain("asks you first");
+    expect(capabilitiesText([])).toContain("Nothing is mounted");
+  });
+
+  it("help phrasings match, but real questions do not", () => {
+    for (const p of ["what can you do", "What can you do?", "help", "capabilities", "?"]) {
+      expect(HELP_RE.test(p), p).toBe(true);
+    }
+    expect(HELP_RE.test("what can you do about my inbox")).toBe(false);
+    expect(HELP_RE.test("help me draft a reply")).toBe(false);
+  });
+
   it("ackFirst:false keeps the single-reply behavior for tight rate budgets", async () => {
     const r = bridgeRig(async () => "just the answer");
     r.deps.ackFirst = false;
@@ -508,5 +541,60 @@ describe("bridge config: fail-closed by construction", () => {
     const config = loadBridgeConfig(dir);
     expect(config.maxPerHour).toBe(120);
     expect(config.pollSeconds).toBe(1);
+  });
+});
+
+describe("sending the model as little as possible", () => {
+  const mk = (name: string, scope: string) =>
+    defineTool({
+      name,
+      description: "x",
+      scope,
+      mode: "read" as const,
+      undo: "none" as const,
+      inputSchema: { q: z.string() },
+      handler: async () => ({ content: "" }),
+    });
+  const all = [
+    mk("mail_search", "Mail"),
+    mk("mail_read", "Mail"),
+    mk("reminder_create", "Reminders"),
+    mk("note_create", "Notes"),
+    mk("event_create", "Calendar"),
+  ];
+
+  it("routes to one app when the words name it", () => {
+    expect(selectTools("any email from the school?", all).reason).toBe("Mail");
+    expect(selectTools("remind me to call the vet", all).tools.map((t) => t.scope)).toEqual([
+      "Reminders",
+    ]);
+    expect(selectTools("jot down a note about the roof", all).reason).toBe("Notes");
+    expect(selectTools("what meetings do I have", all).reason).toBe("Calendar");
+    expect(selectTools("any emails from the school?", all).reason).toBe("Mail");
+    expect(selectTools("add to my todos", all).reason).toBe("Reminders");
+  });
+
+  it("offers both when a bare time could mean either app", () => {
+    expect(selectTools("something tomorrow at 2pm", all).reason).toBe("Calendar+Reminders");
+  });
+
+  it("sends everything when the message names several apps or none", () => {
+    expect(selectTools("check my email and my calendar", all).reason).toBe("Calendar+Mail");
+    expect(selectTools("how are you?", all).reason).toBe("all");
+  });
+
+  it("never narrows to nothing when the matched app is not installed", () => {
+    const onlyMail = [mk("mail_search", "Mail")];
+    const picked = selectTools("remind me to call the vet", onlyMail);
+    expect(picked.tools).toHaveLength(1);
+    expect(picked.reason).toBe("all");
+  });
+
+  it("cuts the schema payload substantially on a typical message", () => {
+    const before = JSON.stringify(all.map((t) => shapeToJsonSchema(t.inputSchema))).length;
+    const after = JSON.stringify(
+      selectTools("remind me to call the vet", all).tools.map((t) => shapeToJsonSchema(t.inputSchema))
+    ).length;
+    expect(after).toBeLessThan(before / 2);
   });
 });

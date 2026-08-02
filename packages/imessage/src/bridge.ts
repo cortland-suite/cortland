@@ -33,6 +33,8 @@ export interface BridgeDeps {
   log?: (message: string) => void;
   /** Guard against a runaway thread: max messages handled per tick. */
   maxPerTick?: number;
+  /** One-line-per-app summary of what is mounted, for "what can you do". */
+  capabilities?: () => string;
   /** Last known prompt size and the model's window, for the ack's warning. */
   contextStatus?: () => { used: number; limit: number };
   /** Text an immediate ack before thinking (default true). A local model can
@@ -68,6 +70,11 @@ export interface TickResult {
  *  context should not have to guess the magic words. */
 export const RESET_RE =
   /^\s*(new topic|start over|reset|clear|clear (the )?(context|history|chat))\s*[.!]?\s*$/i;
+
+/** "What can you do?" — answered from the tools actually mounted, so the
+ *  reply can never drift from reality or be hallucinated. */
+export const HELP_RE =
+  /^\s*(what can you do|what can i ask|what do you do|capabilities|commands|help|\?)\s*[.?!]*\s*$/i;
 
 /** At or above this share of the window, the bridge clears the thread itself
  *  rather than letting answers quietly degrade. */
@@ -125,7 +132,8 @@ async function handleOne(
     dryRun: false,
     toolVersion: deps.version,
   };
-  if (deps.ackFirst !== false) {
+  const instant = RESET_RE.test(message.text) || (deps.capabilities && HELP_RE.test(message.text));
+  if (deps.ackFirst !== false && !instant) {
     const status = deps.contextStatus?.();
     const ack = await deps.sender.send(ackText(status?.used, status?.limit));
     deps.audit.record({
@@ -134,6 +142,14 @@ async function handleOne(
       outcome: ack.ok ? "ok" : "error",
       detail: ack.detail,
     });
+  }
+
+  // Answered without the model: it is faster, always accurate, and costs
+  // nothing — the tools themselves are the source of truth.
+  if (deps.capabilities && HELP_RE.test(message.text)) {
+    await deps.sender.send(deps.capabilities());
+    deps.audit.record({ ...base, tool: "imessage_help", outcome: "ok" });
+    return;
   }
 
   const history = deps.history ?? [];

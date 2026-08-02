@@ -25,6 +25,8 @@ import {
 import { ImessageApprovalChannel } from "./approval.js";
 import { runBrain, type ChatMessage } from "./brain.js";
 import { runBridge } from "./bridge.js";
+import { capabilitiesText } from "./capabilities.js";
+import { selectTools } from "./select.js";
 import { ChatDb } from "./chatdb.js";
 import { DEFAULT_CHAT_DB, loadBridgeConfig, saveBridgeConfig } from "./config.js";
 import { OwnerSender } from "./send.js";
@@ -196,6 +198,7 @@ async function status(config: ReturnType<typeof loadBridgeConfig>): Promise<void
   }
   const tools = await resolveTools((m) => console.log(m));
   console.log(`tools available: ${tools.length}`);
+  console.log("\n" + capabilitiesText(tools));
 }
 
 async function run(config: ReturnType<typeof loadBridgeConfig>): Promise<void> {
@@ -237,14 +240,20 @@ async function run(config: ReturnType<typeof loadBridgeConfig>): Promise<void> {
     log,
     history: [],
     contextStatus: () => usage,
-    think: (text, history) =>
-      runBrain(text, {
-        tools,
+    capabilities: () => capabilitiesText(tools),
+    think: (text, history) => {
+      // Route by the words used: most messages concern one app, and every
+      // unsent schema is context the conversation gets to keep.
+      const picked = selectTools(text, tools);
+      log(`tools for this message: ${picked.tools.length}/${tools.length} (${picked.reason})`);
+      return runBrain(text, {
+        tools: picked.tools,
         deps,
         chat,
         history,
         profile: config.profile,
         onUsage: (n) => (usage.used = n),
-      }),
+      });
+    },
   });
 }
