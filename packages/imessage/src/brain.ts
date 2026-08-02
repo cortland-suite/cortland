@@ -36,7 +36,7 @@ export interface ChatMessage {
 export type ChatFn = (
   messages: ChatMessage[],
   tools: unknown[]
-) => Promise<{ message: ChatMessage }>;
+) => Promise<{ message: ChatMessage; promptTokens?: number }>;
 
 export interface BrainOptions {
   tools: Array<Readonly<GovernedToolDef<Record<string, unknown>>>>;
@@ -52,6 +52,9 @@ export interface BrainOptions {
   history?: ChatMessage[];
   /** Injectable clock (tests). */
   now?: () => Date;
+  /** Called with the prompt-token count of each model call, so the caller can
+   *  warn the human before the window fills and answers start degrading. */
+  onUsage?: (promptTokens: number) => void;
   /** Who the assistant is talking to: name and any standing facts the owner
    *  wants it to know. Free text from config; it is the owner's own words,
    *  and it is the only content in the prompt that is treated as trusted. */
@@ -124,7 +127,8 @@ export async function runBrain(userText: string, opts: BrainOptions): Promise<st
   ];
 
   for (let turn = 0; turn < maxTurns; turn++) {
-    const { message } = await opts.chat(messages, toolSchemas);
+    const { message, promptTokens } = await opts.chat(messages, toolSchemas);
+    if (promptTokens !== undefined) opts.onUsage?.(promptTokens);
     messages.push(message);
     // Small models often TYPE a tool call into the content instead of using
     // the protocol's tool_calls field (field-verified 2026-08-02: llama3.2:3b

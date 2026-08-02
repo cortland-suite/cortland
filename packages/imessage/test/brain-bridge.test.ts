@@ -17,7 +17,7 @@ import {
   shapeToJsonSchema,
   type ChatMessage,
 } from "../src/brain.js";
-import { ACK_TEXT, tick, type BridgeDeps } from "../src/bridge.js";
+import { ACK_TEXT, ackText, tick, type BridgeDeps } from "../src/bridge.js";
 import { ChatDb } from "../src/chatdb.js";
 import { loadBridgeConfig, saveBridgeConfig } from "../src/config.js";
 import { OwnerSender } from "../src/send.js";
@@ -291,6 +291,38 @@ describe("bridge daemon", () => {
     expect(order).toEqual(["thinking"]);
     expect(r.sentTexts[1]).toContain("the answer");
     expect(r.audit.list(9).some((x) => x.tool === "imessage_ack" && x.outcome === "ok")).toBe(true);
+  });
+
+  it("the ack warns as the context window fills, and stays quiet when it is not", () => {
+    expect(ackText(undefined, undefined)).toBe(ACK_TEXT);
+    expect(ackText(0, 16384)).toBe(ACK_TEXT);
+    expect(ackText(5000, 16384)).toBe(ACK_TEXT); // 31% — no noise
+    expect(ackText(11500, 16384)).toContain("70% full");
+    expect(ackText(15000, 16384)).toContain("92% full");
+    expect(ackText(15000, 16384)).toContain("new topic");
+  });
+
+  it("the live ack carries the warning from the last model call", async () => {
+    const r = bridgeRig(async () => "answer");
+    r.deps.contextStatus = () => ({ used: 15200, limit: 16384 });
+    r.f.add(OWNER, "hello");
+    await tick(0, r.deps);
+    expect(r.sentTexts[0]).toContain("93% full");
+  });
+
+  it('"new topic" clears the conversation without invoking the model', async () => {
+    let thought = 0;
+    const r = bridgeRig(async () => {
+      thought += 1;
+      return "x";
+    });
+    r.deps.history = [{ role: "user", content: "old" }, { role: "assistant", content: "older" }];
+    r.f.add(OWNER, "new topic");
+    await tick(0, r.deps);
+    expect(thought).toBe(0);
+    expect(r.deps.history).toHaveLength(0);
+    expect(r.sentTexts.some((s) => s.includes("starting fresh"))).toBe(true);
+    expect(r.audit.list(5).some((x) => x.tool === "imessage_reset")).toBe(true);
   });
 
   it("ackFirst:false keeps the single-reply behavior for tight rate budgets", async () => {

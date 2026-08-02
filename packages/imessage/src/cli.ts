@@ -68,6 +68,8 @@ async function resolveTools(
   return tools;
 }
 
+const CONTEXT_LIMIT = 16384;
+
 /** Ollama chat-with-tools, the shape the Q28 field test proved. */
 function ollamaChat(host: string, model: string) {
   return async (messages: ChatMessage[], tools: unknown[]) => {
@@ -87,9 +89,16 @@ function ollamaChat(host: string, model: string) {
         options: { num_ctx: 16384 },
       }),
     });
-    const body = (await res.json()) as { message?: ChatMessage; error?: string };
+    const body = (await res.json()) as {
+      message?: ChatMessage;
+      error?: string;
+      prompt_eval_count?: number;
+    };
     if (body.error) throw new Error(`model: ${body.error}`);
-    return { message: body.message ?? { role: "assistant", content: "(empty)" } };
+    return {
+      message: body.message ?? { role: "assistant", content: "(empty)" },
+      promptTokens: body.prompt_eval_count,
+    };
   };
 }
 
@@ -215,6 +224,8 @@ async function run(config: ReturnType<typeof loadBridgeConfig>): Promise<void> {
     principal: "imessage:owner",
   };
   const chat = ollamaChat(config.model.host, config.model.model);
+  // The last model call's prompt size — what the next ack warns about.
+  const usage = { used: 0, limit: CONTEXT_LIMIT };
   await runBridge({
     chatdb,
     sender,
@@ -225,7 +236,15 @@ async function run(config: ReturnType<typeof loadBridgeConfig>): Promise<void> {
     pollSeconds: config.pollSeconds,
     log,
     history: [],
+    contextStatus: () => usage,
     think: (text, history) =>
-      runBrain(text, { tools, deps, chat, history, profile: config.profile }),
+      runBrain(text, {
+        tools,
+        deps,
+        chat,
+        history,
+        profile: config.profile,
+        onUsage: (n) => (usage.used = n),
+      }),
   });
 }

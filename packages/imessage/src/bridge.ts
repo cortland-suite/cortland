@@ -33,6 +33,8 @@ export interface BridgeDeps {
   log?: (message: string) => void;
   /** Guard against a runaway thread: max messages handled per tick. */
   maxPerTick?: number;
+  /** Last known prompt size and the model's window, for the ack's warning. */
+  contextStatus?: () => { used: number; limit: number };
   /** Text an immediate ack before thinking (default true). A local model can
    *  take tens of seconds; without an ack, "working" and "broken" look
    *  identical from the phone. Costs one extra send against the law-4 cap. */
@@ -40,6 +42,18 @@ export interface BridgeDeps {
 }
 
 export const ACK_TEXT = "Received — working on it…";
+
+/** Warn from 70% of the window; shout past 90%. Below that, say nothing —
+ *  a status readout on every message is noise, not information. */
+export function ackText(used?: number, limit?: number): string {
+  if (!used || !limit || used <= 0) return ACK_TEXT;
+  const pct = Math.round((used / limit) * 100);
+  if (pct >= 90) {
+    return `${ACK_TEXT} (context ${pct}% full — say "new topic" to clear it)`;
+  }
+  if (pct >= 70) return `${ACK_TEXT} (context ${pct}% full)`;
+  return ACK_TEXT;
+}
 
 export interface TickResult {
   cursor: number;
@@ -103,7 +117,8 @@ async function handleOne(
     toolVersion: deps.version,
   };
   if (deps.ackFirst !== false) {
-    const ack = await deps.sender.send(ACK_TEXT);
+    const status = deps.contextStatus?.();
+    const ack = await deps.sender.send(ackText(status?.used, status?.limit));
     deps.audit.record({
       ...base,
       tool: "imessage_ack",
@@ -113,6 +128,14 @@ async function handleOne(
   }
 
   const history = deps.history ?? [];
+  // An explicit reset the human can type when the window fills.
+  if (/^\s*(new topic|start over|clear (context|history))\s*[.!]?\s*$/i.test(message.text)) {
+    history.splice(0, history.length);
+    if (deps.history === undefined) deps.history = history;
+    await deps.sender.send("Cleared — starting fresh.");
+    deps.audit.record({ ...base, tool: "imessage_reset", outcome: "ok" });
+    return;
+  }
   let reply: string;
   try {
     reply = await deps.think(message.text, [...history]);
