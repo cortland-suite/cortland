@@ -1,6 +1,6 @@
 {
   "name": "@honeycrisp/context",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "The context layer, M1: derived metadata + pointers over Mail, served over MCP. Pointers, not copies.",
   "license": "MIT",
   "type": "module",
@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "better-sqlite3": "^11.10.0",
-    "@honeycrisp/governed": "^0.1.1",
+    "@honeycrisp/governed": "^0.2.0",
     "yaml": "^2.6.0",
     "zod": "^3.24.0"
   },

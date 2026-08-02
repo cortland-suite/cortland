@@ -1,6 +1,6 @@
 {
   "name": "@honeycrisp/calendar",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Apple Calendar write tools over MCP, governed: reads fenced and bounded to one calendar per query, creation provenance-stamped with no attendees by design, deletion captures its own restore recipe first",
   "license": "MIT",
   "type": "module",
@@ -43,7 +43,7 @@
     "url": "https://github.com/honeycrisp-suite/honeycrisp/issues"
   },
   "dependencies": {
-    "@honeycrisp/governed": "^0.1.1",
+    "@honeycrisp/governed": "^0.2.0",
     "zod": "^3.24.0"
   },
   "devDependencies": {

@@ -1,6 +1,6 @@
 {
   "name": "@honeycrisp/folders",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Folder-as-API: watched folders run declared local pipelines; results land beside the drop; every run is audited",
   "license": "MIT",
   "type": "module",
@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "chokidar": "^4.0.0",
-    "@honeycrisp/governed": "^0.1.1",
+    "@honeycrisp/governed": "^0.2.0",
     "yaml": "^2.6.0",
     "zod": "^3.24.0"
   },

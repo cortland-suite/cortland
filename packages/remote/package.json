@@ -1,6 +1,6 @@
 {
   "name": "@honeycrisp/remote",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "The remote gateway: the suite's governed MCP servers over loopback HTTP with bearer tokens, scopes, and principal-annotated audit — reach them from your own devices via your own tunnel",
   "license": "MIT",
   "type": "module",
@@ -43,9 +43,9 @@
     "url": "https://github.com/honeycrisp-suite/honeycrisp/issues"
   },
   "dependencies": {
-    "@honeycrisp/governed": "^0.1.1",
-    "@honeycrisp/mail": "^0.1.1",
-    "@honeycrisp/context": "^0.1.1",
+    "@honeycrisp/governed": "^0.2.0",
+    "@honeycrisp/mail": "^0.2.0",
+    "@honeycrisp/context": "^0.2.0",
     "@modelcontextprotocol/sdk": "^1.12.0",
     "zod": "^3.24.0"
   },

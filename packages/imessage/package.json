@@ -1,6 +1,6 @@
 {
   "name": "@honeycrisp/imessage",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "The iMessage bridge: text your local AI, approve gated actions by replying — owner-only by construction, rate-disciplined, audited",
   "license": "MIT",
   "type": "module",
@@ -43,7 +43,7 @@
     "url": "https://github.com/honeycrisp-suite/honeycrisp/issues"
   },
   "dependencies": {
-    "@honeycrisp/governed": "^0.1.1",
+    "@honeycrisp/governed": "^0.2.0",
     "better-sqlite3": "^11.10.0",
     "zod": "^3.24.0"
   },

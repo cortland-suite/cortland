@@ -1,6 +1,6 @@
 {
   "name": "@honeycrisp/governed",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "The governed-MCP framework: dry-run defaults, human-gated writes, audit trail, provenance, undo — enforced by construction",
   "license": "MIT",
   "type": "module",

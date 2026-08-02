@@ -1,6 +1,6 @@
 {
   "name": "@honeycrisp/setup",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Interactive onboarding for the governed-MCP suite: client config, permission warm-up, iCloud agents folder, launchd",
   "license": "MIT",
   "type": "module",
@@ -17,7 +17,7 @@
     "prepublishOnly": "npm run build && npm run test"
   },
   "dependencies": {
-    "@honeycrisp/governed": "^0.1.1"
+    "@honeycrisp/governed": "^0.2.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

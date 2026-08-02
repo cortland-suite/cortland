@@ -1,6 +1,6 @@
 {
   "name": "@honeycrisp/notes",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Apple Notes over MCP, governed: reads fenced and HTML-stripped, creation provenance-stamped, appending gated with native undo — the prior body captured before the write",
   "license": "MIT",
   "type": "module",
@@ -43,7 +43,7 @@
     "url": "https://github.com/honeycrisp-suite/honeycrisp/issues"
   },
   "dependencies": {
-    "@honeycrisp/governed": "^0.1.1",
+    "@honeycrisp/governed": "^0.2.0",
     "zod": "^3.24.0"
   },
   "devDependencies": {

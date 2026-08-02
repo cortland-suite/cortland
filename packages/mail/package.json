@@ -1,6 +1,6 @@
 {
   "name": "@honeycrisp/mail",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Apple Mail over MCP, built on the governed framework: reads free, drafts write-safe, no send tool at all",
   "license": "MIT",
   "type": "module",
@@ -19,7 +19,7 @@
     "prepublishOnly": "npm run build && npm run test"
   },
   "dependencies": {
-    "@honeycrisp/governed": "^0.1.1",
+    "@honeycrisp/governed": "^0.2.0",
     "zod": "^3.24.0"
   },
   "devDependencies": {
