@@ -50,8 +50,8 @@ export const eventsWindow = defineTool({
   undo: "none",
   inputSchema: {
     calendar: z.string().min(1).describe("Calendar name (from calendars_list) — required, one per query"),
-    startAfter: z.string().datetime().describe("Window start (ISO datetime)"),
-    startBefore: z.string().datetime().describe("Window end (ISO datetime, at most 62 days after startAfter)"),
+    startAfter: z.string().datetime({ offset: true, local: true }).describe("Window start (ISO datetime)"),
+    startBefore: z.string().datetime({ offset: true, local: true }).describe("Window end (ISO datetime, at most 62 days after startAfter)"),
     limit: z.number().int().min(1).max(200).default(50),
   },
   handler: async (args: {
@@ -83,8 +83,8 @@ export const eventCreate = defineTool({
   inputSchema: {
     calendar: z.string().min(1).describe("Calendar name (from calendars_list)"),
     summary: z.string().min(1).describe("Event title"),
-    startIso: z.string().datetime(),
-    endIso: z.string().datetime(),
+    startIso: z.string().datetime({ offset: true, local: true }),
+    endIso: z.string().datetime({ offset: true, local: true }),
     location: z.string().optional(),
     description: z.string().optional(),
   },

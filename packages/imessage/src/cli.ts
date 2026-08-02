@@ -107,6 +107,8 @@ if (command === "setup") {
     ownerHandles: owner.split(",").map((h) => h.trim()),
     model: flag("model"),
     assistantAccount: flag("assistant"),
+    name: flag("name"),
+    about: flag("about"),
   });
   console.log(`owner allowlist: ${config.ownerHandles.join(", ")}`);
   console.log(`model: ${config.model.model} @ ${config.model.host}`);
@@ -162,6 +164,7 @@ async function status(config: ReturnType<typeof loadBridgeConfig>): Promise<void
   console.log(
     `assistant account: ${config.assistantAccount ?? "(not pinned — reads are handle-filtered only)"}`
   );
+  console.log(`profile: ${config.profile ?? "(none — set with --name / --about)"}`);
   console.log(`live mode: ${loadConfig(dataDir).live ? "ON (writes can execute)" : "off (dry-run)"}`);
   let db: ChatDb | undefined;
   try {
@@ -222,6 +225,7 @@ async function run(config: ReturnType<typeof loadBridgeConfig>): Promise<void> {
     pollSeconds: config.pollSeconds,
     log,
     history: [],
-    think: (text, history) => runBrain(text, { tools, deps, chat, history }),
+    think: (text, history) =>
+      runBrain(text, { tools, deps, chat, history, profile: config.profile }),
   });
 }

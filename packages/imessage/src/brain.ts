@@ -3,7 +3,7 @@ import {
   type ExecutionDeps,
   type GovernedToolDef,
 } from "@honeycrisp/governed";
-import type { ZodTypeAny } from "zod";
+import { z, type ZodTypeAny } from "zod";
 
 /**
  * The local agent loop — promoted from the Q28 field-test harness. A local
@@ -50,6 +50,35 @@ export interface BrainOptions {
    *  and could not understand the answer. Kept short: the context window on
    *  a small local model is the scarce resource. */
   history?: ChatMessage[];
+  /** Injectable clock (tests). */
+  now?: () => Date;
+  /** Who the assistant is talking to: name and any standing facts the owner
+   *  wants it to know. Free text from config; it is the owner's own words,
+   *  and it is the only content in the prompt that is treated as trusted. */
+  profile?: string;
+}
+
+/**
+ * A model has no clock. Without this line "tomorrow" is unresolvable and a
+ * small model will invent a date — field-verified 2026-08-02, when reminders
+ * landed on 1904-01-01 and 2025-03-15. Absolute dates in the prompt are the
+ * fix; the tools then receive real ISO timestamps.
+ */
+export function nowLine(now = new Date()): string {
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const human = now.toLocaleString("en-US", {
+    weekday: "long", year: "numeric", month: "long", day: "numeric",
+    hour: "numeric", minute: "2-digit", timeZoneName: "short",
+  });
+  const tomorrow = new Date(now.getTime() + 86_400_000);
+  const iso = (d: Date) =>
+    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  return (
+    `RIGHT NOW it is ${human} (timezone ${tz}). Today is ${iso(now)} and ` +
+    `tomorrow is ${iso(tomorrow)}. Resolve every relative date ("tomorrow", ` +
+    `"next Friday") against this, and pass tools full ISO timestamps like ` +
+    `${iso(tomorrow)}T09:00:00 — never a word like "tomorrow".`
+  );
 }
 
 const DEFAULT_SYSTEM =
@@ -80,7 +109,12 @@ export async function runBrain(userText: string, opts: BrainOptions): Promise<st
   }));
 
   const messages: ChatMessage[] = [
-    { role: "system", content: opts.systemPrompt ?? DEFAULT_SYSTEM },
+    {
+      role: "system",
+      content:
+        `${opts.systemPrompt ?? DEFAULT_SYSTEM}\n${nowLine(opts.now?.())}` +
+        (opts.profile ? `\nABOUT THE PERSON YOU ARE TEXTING: ${opts.profile}` : ""),
+    },
     ...(opts.history ?? []),
     { role: "user", content: userText },
   ];
@@ -109,8 +143,23 @@ export async function runBrain(userText: string, opts: BrainOptions): Promise<st
         content = `No such tool: ${name}.`;
       } else {
         const args = normalizeArgs(parseArgs(call.function.arguments), def.inputSchema);
-        const result = await executeGoverned(def, args, opts.deps);
-        content = result.text;
+        // Validate against the tool's own schema BEFORE executing. The brain
+        // calls executeGoverned directly, so nothing else would — and a bad
+        // argument that reaches a handler becomes a real artifact with a
+        // garbage value (field-verified 2026-08-02: due:"tomorrow" produced a
+        // reminder dated 1904). A rejection is fed back so the model retries.
+        const parsed = z.object(def.inputSchema).safeParse(args);
+        if (!parsed.success) {
+          content =
+            `${name} rejected the arguments: ` +
+            parsed.error.issues
+              .map((i) => `${i.path.join(".") || "(root)"} ${i.message}`)
+              .join("; ") +
+            ". Fix them and call the tool again.";
+        } else {
+          const result = await executeGoverned(def, parsed.data as Record<string, unknown>, opts.deps);
+          content = result.text;
+        }
       }
       messages.push({ role: "tool", tool_name: name, content: content.slice(0, 8000) });
     }

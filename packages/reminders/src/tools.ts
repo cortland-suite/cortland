@@ -35,8 +35,8 @@ export const remindersSearch = defineTool({
     list: z.string().min(1).optional().describe("Limit to one list by name"),
     query: z.string().optional().describe("Case-insensitive name match"),
     includeCompleted: z.boolean().optional().describe("Include completed items"),
-    dueBefore: z.string().datetime().optional(),
-    dueAfter: z.string().datetime().optional(),
+    dueBefore: z.string().datetime({ offset: true, local: true }).optional(),
+    dueAfter: z.string().datetime({ offset: true, local: true }).optional(),
     limit: z.number().int().min(1).max(200).default(50),
   },
   handler: async (args: {
@@ -64,7 +64,7 @@ export const reminderCreate = defineTool({
     name: z.string().min(1),
     list: z.string().min(1).optional(),
     notes: z.string().optional(),
-    due: z.string().datetime().optional(),
+    due: z.string().datetime({ offset: true, local: true }).optional(),
   },
   handler: async (
     args: { name: string; list?: string; notes?: string; due?: string },

@@ -25,6 +25,8 @@ export interface BridgeConfig {
    *  it). Pins reads to messages addressed TO the assistant — law 3 made
    *  structural. Optional only for back-compat; setup always writes it. */
   assistantAccount?: string;
+  /** Owner name + standing facts, injected into the system prompt. */
+  profile?: string;
   model: { type: "ollama"; model: string; host: string };
   maxPerHour: number;
   pollSeconds: number;
@@ -64,6 +66,7 @@ export function loadBridgeConfig(dataDir: string): BridgeConfig {
       typeof b.assistantAccount === "string" && b.assistantAccount.trim() !== ""
         ? b.assistantAccount.trim()
         : undefined,
+    profile: buildProfile(b.name, b.about),
     model: {
       type: "ollama",
       model: typeof model.model === "string" ? model.model : "gemma4:e4b",
@@ -78,7 +81,13 @@ export function loadBridgeConfig(dataDir: string): BridgeConfig {
 /** Write/merge the imessage block, preserving everything else in config.json. */
 export function saveBridgeConfig(
   dataDir: string,
-  patch: { ownerHandles?: string[]; model?: string; assistantAccount?: string }
+  patch: {
+    ownerHandles?: string[];
+    model?: string;
+    assistantAccount?: string;
+    name?: string;
+    about?: string;
+  }
 ): BridgeConfig {
   fs.mkdirSync(dataDir, { recursive: true });
   const file = path.join(dataDir, "config.json");
@@ -95,9 +104,21 @@ export function saveBridgeConfig(
   if (patch.ownerHandles) next.ownerHandles = patch.ownerHandles;
   if (patch.model) next.model = { type: "ollama", model: patch.model };
   if (patch.assistantAccount) next.assistantAccount = patch.assistantAccount;
+  if (patch.name) next.name = patch.name;
+  if (patch.about) next.about = patch.about;
   config.imessage = next;
   fs.writeFileSync(file, JSON.stringify(config, null, 2) + "\n");
   return loadBridgeConfig(dataDir);
+}
+
+/** "You are texting Matt. He …" — one line the model can actually use. */
+export function buildProfile(name: unknown, about: unknown): string | undefined {
+  const parts: string[] = [];
+  if (typeof name === "string" && name.trim() !== "") {
+    parts.push(`Their name is ${name.trim()}; address them by it.`);
+  }
+  if (typeof about === "string" && about.trim() !== "") parts.push(about.trim());
+  return parts.length > 0 ? parts.join(" ") : undefined;
 }
 
 function intOr(value: unknown, fallback: number, lo: number, hi: number): number {

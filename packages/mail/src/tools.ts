@@ -70,8 +70,8 @@ export const mailSearch = defineTool({
     from: z.string().optional().describe("Match in sender (name or address)"),
     account: z.string().optional().describe("Limit to one account"),
     mailbox: z.string().optional().describe("Mailbox name (default: inbox)"),
-    since: z.string().datetime().optional().describe("Received after, ISO 8601"),
-    before: z.string().datetime().optional().describe("Received before, ISO 8601"),
+    since: z.string().datetime({ offset: true, local: true }).optional().describe("Received after, ISO 8601"),
+    before: z.string().datetime({ offset: true, local: true }).optional().describe("Received before, ISO 8601"),
     limit: z.number().int().min(1).max(100).default(20),
   },
   handler: async (args: {
