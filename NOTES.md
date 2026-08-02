@@ -301,6 +301,19 @@ deterministic — a read tool must not quietly spend model calls.)
   and permission gates still on its roadmap. Honeycrisp's pitch in one line:
   what OpenClaw promises to bolt on someday is what this suite was born as.
 
+29. iMessage bridge M0 BUILT 2026-08-01 (docs/06): @honeycrisp/imessage —
+    chat.db reader (owner allowlist at the SQL boundary, Ventura
+    attributedBody decoder, undecodable rows dropped), owner-only sender with
+    the law-4 rate cap, reply-to-approve channel (framework-verified nonce the
+    model never sees), the local agent loop (no privileged path: every call
+    goes through executeGoverned), the poll→think→reply daemon, config that
+    REFUSES to start without an owner allowlist, CLI + launchd. 37 tests, all
+    against a synthetic chat.db with fake clocks. M1 (live) needs the operator:
+    second Apple ID in Messages.app, Full Disk Access, Automation → Messages.
+    Open follow-ups: handle-matching edge cases (email vs number for the same
+    person, unicode lookalikes) flagged in docs/07 for the security review;
+    briefing highlights as proactive texts (rate-capped) parked for M2.
+
 ## DISCOVERABILITY (how people find this)
 
 - 2026-08-01 — **Listed in the official MCP Registry**: io.github.
