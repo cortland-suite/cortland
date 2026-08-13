@@ -1,5 +1,5 @@
-import type { AuditStore } from "@honeycrisp/governed";
-import { runJxa } from "@honeycrisp/governed";
+import type { AuditStore } from "@cortland/governed";
+import { runJxa } from "@cortland/governed";
 import { buildCaptureScript } from "./scripts.js";
 import { parseAddress, type CapturedMessage, type ContextStore } from "./store.js";
 

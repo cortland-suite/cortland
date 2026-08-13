@@ -5,7 +5,7 @@ import {
   AuditStore,
   createGovernedServer,
   type GovernedToolDef,
-} from "@honeycrisp/governed";
+} from "@cortland/governed";
 import { TokenStore, type TokenRecord } from "./tokens.js";
 
 /**
@@ -16,7 +16,7 @@ import { TokenStore, type TokenRecord } from "./tokens.js";
  *   - Binds 127.0.0.1 ONLY. There is no configuration to bind wider; public
  *     reachability is always a tunnel's explicit job (tailscale serve,
  *     cloudflared), never this process's.
- *   - Every request must carry a bearer token minted by `honeycrisp-remote
+ *   - Every request must carry a bearer token minted by `cortland-remote
  *     token mint`. No token, unknown token, revoked token → 401. Verification
  *     is constant-time against stored hashes; the secret itself is nowhere on
  *     this machine.
@@ -78,7 +78,7 @@ export async function startGateway(opts: GatewayOptions) {
     if (!record) {
       log(`401 ${req.method} ${req.url} (bad or missing token)`);
       res
-        .writeHead(401, { "WWW-Authenticate": 'Bearer realm="honeycrisp-remote"' })
+        .writeHead(401, { "WWW-Authenticate": 'Bearer realm="cortland-remote"' })
         .end(JSON.stringify({ error: "missing or unknown bearer token" }));
       return;
     }
@@ -134,9 +134,9 @@ export async function startGateway(opts: GatewayOptions) {
     const readTools = mount.tools.filter((t) => t.mode === "read");
     const withheld = mount.tools.filter((t) => t.mode !== "read");
     const governed = createGovernedServer({
-      name: `honeycrisp-${mount.name}`,
+      name: `cortland-${mount.name}`,
       version: mount.version,
-      appName: "honeycrisp",
+      appName: "cortland",
       dataDir: opts.dataDir,
       tools: record.scope === "read" ? readTools : mount.tools,
       principal,
@@ -190,7 +190,7 @@ export async function startGateway(opts: GatewayOptions) {
   });
   const actualPort = (server.address() as { port: number }).port;
   log(
-    `honeycrisp-remote listening on 127.0.0.1:${actualPort} — mounts: ` +
+    `cortland-remote listening on 127.0.0.1:${actualPort} — mounts: ` +
       opts.mounts.map((m) => `/mcp/${m.name}`).join(", ")
   );
 

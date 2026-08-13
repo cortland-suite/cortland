@@ -1,13 +1,13 @@
 {
-  "name": "@honeycrisp/reminders",
+  "name": "@cortland/reminders",
   "version": "0.2.0",
   "description": "Apple Reminders over MCP, governed: reads fenced, creation provenance-stamped, completion gated with native undo, deletion captures its own restore recipe first",
   "license": "MIT",
   "type": "module",
   "main": "dist/server.js",
-  "mcpName": "io.github.honeycrisp-suite/reminders",
+  "mcpName": "io.github.cortland-suite/reminders",
   "bin": {
-    "honeycrisp-reminders": "dist/server.js"
+    "cortland-reminders": "dist/server.js"
   },
   "files": [
     "dist",
@@ -35,15 +35,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/honeycrisp-suite/honeycrisp.git",
+    "url": "git+https://github.com/cortland-suite/cortland.git",
     "directory": "packages/reminders"
   },
-  "homepage": "https://github.com/honeycrisp-suite/honeycrisp#readme",
+  "homepage": "https://github.com/cortland-suite/cortland#readme",
   "bugs": {
-    "url": "https://github.com/honeycrisp-suite/honeycrisp/issues"
+    "url": "https://github.com/cortland-suite/cortland/issues"
   },
   "dependencies": {
-    "@honeycrisp/governed": "^0.2.0",
+    "@cortland/governed": "^0.2.0",
     "zod": "^3.24.0"
   },
   "devDependencies": {

@@ -6,7 +6,7 @@
 <plist version="1.0">
 <dict>
   <key>Label</key>
-  <string>com.honeycrisp.context-capture</string>
+  <string>com.cortland.context-capture</string>
   <key>ProgramArguments</key>
   <array>
     <string>REPLACE_NODE_PATH</string>
@@ -18,8 +18,8 @@
   <key>RunAtLoad</key>
   <true/>
   <key>StandardOutPath</key>
-  <string>/tmp/honeycrisp-context-capture.log</string>
+  <string>/tmp/cortland-context-capture.log</string>
   <key>StandardErrorPath</key>
-  <string>/tmp/honeycrisp-context-capture.err</string>
+  <string>/tmp/cortland-context-capture.err</string>
 </dict>
 </plist>

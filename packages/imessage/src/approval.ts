@@ -3,7 +3,7 @@ import type {
   ApprovalChannel,
   ApprovalRequest,
   ApprovalResult,
-} from "@honeycrisp/governed";
+} from "@cortland/governed";
 import type { ChatDb } from "./chatdb.js";
 import type { OwnerSender } from "./send.js";
 

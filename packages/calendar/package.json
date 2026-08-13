@@ -1,13 +1,13 @@
 {
-  "name": "@honeycrisp/calendar",
+  "name": "@cortland/calendar",
   "version": "0.2.0",
   "description": "Apple Calendar write tools over MCP, governed: reads fenced and bounded to one calendar per query, creation provenance-stamped with no attendees by design, deletion captures its own restore recipe first",
   "license": "MIT",
   "type": "module",
   "main": "dist/server.js",
-  "mcpName": "io.github.honeycrisp-suite/calendar",
+  "mcpName": "io.github.cortland-suite/calendar",
   "bin": {
-    "honeycrisp-calendar": "dist/server.js"
+    "cortland-calendar": "dist/server.js"
   },
   "files": [
     "dist",
@@ -35,15 +35,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/honeycrisp-suite/honeycrisp.git",
+    "url": "git+https://github.com/cortland-suite/cortland.git",
     "directory": "packages/calendar"
   },
-  "homepage": "https://github.com/honeycrisp-suite/honeycrisp#readme",
+  "homepage": "https://github.com/cortland-suite/cortland#readme",
   "bugs": {
-    "url": "https://github.com/honeycrisp-suite/honeycrisp/issues"
+    "url": "https://github.com/cortland-suite/cortland/issues"
   },
   "dependencies": {
-    "@honeycrisp/governed": "^0.2.0",
+    "@cortland/governed": "^0.2.0",
     "zod": "^3.24.0"
   },
   "devDependencies": {

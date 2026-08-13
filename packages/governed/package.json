@@ -1,5 +1,5 @@
 {
-  "name": "@honeycrisp/governed",
+  "name": "@cortland/governed",
   "version": "0.2.0",
   "description": "The governed-MCP framework: dry-run defaults, human-gated writes, audit trail, provenance, undo — enforced by construction",
   "license": "MIT",
@@ -47,11 +47,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/honeycrisp-suite/honeycrisp.git",
+    "url": "git+https://github.com/cortland-suite/cortland.git",
     "directory": "packages/governed"
   },
-  "homepage": "https://github.com/honeycrisp-suite/honeycrisp#readme",
+  "homepage": "https://github.com/cortland-suite/cortland#readme",
   "bugs": {
-    "url": "https://github.com/honeycrisp-suite/honeycrisp/issues"
+    "url": "https://github.com/cortland-suite/cortland/issues"
   }
 }

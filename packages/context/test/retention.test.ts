@@ -3,7 +3,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import Database from "better-sqlite3";
-import { AuditStore } from "@honeycrisp/governed";
+import { AuditStore } from "@cortland/governed";
 import { DEFAULT_RETENTION_DAYS, loadContextConfig } from "../src/calendar.js";
 import { pruneExpired } from "../src/retention.js";
 import { ContextStore } from "../src/store.js";

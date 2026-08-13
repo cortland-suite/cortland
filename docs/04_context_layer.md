@@ -26,7 +26,7 @@ always). Consequences, all intentional:
 
 - **v1 sources: Mail + Calendar only** (Q13 settled — the two most structured,
   least creepy sources; Messages/browsing raise the stakes enormously).
-- Mail: incremental header sweep via honeycrisp-mail's script layer
+- Mail: incremental header sweep via cortland-mail's script layer
   (`dateReceived > cursor`), across accounts. Headers, recipients, thread
   linkage, flags — no bodies.
 - Calendar: events in a sliding window (−1 day … +14 days). Access route needs a
@@ -62,7 +62,7 @@ if FTS demonstrably fails.
 
 ### 3. Serve
 
-- **`honeycrisp-context` MCP server** on the framework — read-mode tools, fenced:
+- **`cortland-context` MCP server** on the framework — read-mode tools, fenced:
   `context_brief(topic?)`, `context_person(name)`, `context_commitments(since?)`,
   `context_changes(since)`. Every answer cites its sources (messageIds, event
   ids) so any claim can be traced and fetched.

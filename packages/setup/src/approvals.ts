@@ -4,7 +4,7 @@ import { randomBytes } from "node:crypto";
 
 const APPROVALS_README = `# Approvals
 
-When a Honeycrisp tool wants to do something gated (send mail, delete, post)
+When a Cortland tool wants to do something gated (send mail, delete, post)
 while approvals are routed here, the request appears in this folder as a
 \`pending-*.md\` file — on every device this folder syncs to.
 
@@ -73,7 +73,7 @@ export function configureFolderApprovals(
  * Opt-in phone ping for waiting approvals (ntfy). Mints a long random topic —
  * on the public relay the topic IS the secret, so it must be unguessable —
  * and points approval.notify at it. The ping body is a fixed string that
- * carries no information (see @honeycrisp/governed notify.ts); the topic
+ * carries no information (see @cortland/governed notify.ts); the topic
  * name lives only in config.json and the user's ntfy app subscription.
  */
 export function configureApprovalNotify(dataDir: string): {
@@ -91,7 +91,7 @@ export function configureApprovalNotify(dataDir: string): {
   if (!approval || approval.channel !== "folder") {
     throw new Error("configure folder approvals first — the ping belongs to that channel");
   }
-  const topic = `honeycrisp-${randomBytes(16).toString("hex")}`;
+  const topic = `cortland-${randomBytes(16).toString("hex")}`;
   const url = `https://ntfy.sh/${topic}`;
   approval.notify = { url };
   fs.writeFileSync(configFile, JSON.stringify(config, null, 2) + "\n");

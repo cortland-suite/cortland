@@ -17,7 +17,7 @@
  * failure, is a ledger row (see ConfiguredApprovalChannel).
  */
 
-export const NOTIFY_TITLE = "Honeycrisp";
+export const NOTIFY_TITLE = "Cortland";
 export const NOTIFY_BODY = "An approval is waiting in your Approvals folder.";
 const TIMEOUT_MS = 5000;
 

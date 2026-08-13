@@ -1,4 +1,4 @@
-import type { AuditStore } from "@honeycrisp/governed";
+import type { AuditStore } from "@cortland/governed";
 import type { ChatMessage } from "./brain.js";
 import type { ChatDb, InboundMessage } from "./chatdb.js";
 import type { OwnerSender } from "./send.js";

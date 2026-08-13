@@ -1,5 +1,5 @@
 import { createRequire } from "node:module";
-import { AuditStore } from "@honeycrisp/governed";
+import { AuditStore } from "@cortland/governed";
 import type { Mount } from "./gateway.js";
 
 const require = createRequire(import.meta.url);
@@ -17,19 +17,19 @@ export async function resolveMounts(
   const mounts: Mount[] = [];
 
   try {
-    const pkg = require("@honeycrisp/mail/package.json") as { version: string };
-    const { mailTools } = (await import("@honeycrisp/mail/dist/tools.js")) as {
+    const pkg = require("@cortland/mail/package.json") as { version: string };
+    const { mailTools } = (await import("@cortland/mail/dist/tools.js")) as {
       mailTools: Mount["tools"];
     };
     mounts.push({ name: "mail", version: pkg.version, tools: mailTools });
   } catch {
-    log("mount skipped: @honeycrisp/mail not installed");
+    log("mount skipped: @cortland/mail not installed");
   }
 
   try {
-    const pkg = require("@honeycrisp/context/package.json") as { version: string };
-    const { ContextStore } = await import("@honeycrisp/context/dist/store.js");
-    const { makeContextTools } = await import("@honeycrisp/context/dist/tools.js");
+    const pkg = require("@cortland/context/package.json") as { version: string };
+    const { ContextStore } = await import("@cortland/context/dist/store.js");
+    const { makeContextTools } = await import("@cortland/context/dist/tools.js");
     const store = new ContextStore(dataDir);
     const audit = new AuditStore(dataDir);
     mounts.push({
@@ -38,7 +38,7 @@ export async function resolveMounts(
       tools: makeContextTools(store, audit, pkg.version) as Mount["tools"],
     });
   } catch {
-    log("mount skipped: @honeycrisp/context not installed");
+    log("mount skipped: @cortland/context not installed");
   }
 
   return mounts;

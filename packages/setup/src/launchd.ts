@@ -2,7 +2,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-export const LAUNCHD_LABEL = "com.honeycrisp.folders";
+export const LAUNCHD_LABEL = "com.cortland.folders";
 
 export function launchAgentPath(label: string = LAUNCHD_LABEL): string {
   return path.join(os.homedir(), "Library", "LaunchAgents", `${label}.plist`);

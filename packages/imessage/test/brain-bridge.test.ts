@@ -9,7 +9,7 @@ import {
   StaticApprovalChannel,
   defineTool,
   type ExecutionDeps,
-} from "@honeycrisp/governed";
+} from "@cortland/governed";
 import {
   normalizeArgs,
   runBrain,

@@ -62,7 +62,7 @@ describe("approval notify setup", () => {
     const data = tmp();
     configureFolderApprovals(icloud, data);
     const result = configureApprovalNotify(data);
-    expect(result.topic).toMatch(/^honeycrisp-[0-9a-f]{32}$/);
+    expect(result.topic).toMatch(/^cortland-[0-9a-f]{32}$/);
     const config = JSON.parse(fs.readFileSync(result.configFile, "utf8"));
     expect(config.approval.notify.url).toBe(`https://ntfy.sh/${result.topic}`);
     expect(config.approval.channel).toBe("folder"); // untouched

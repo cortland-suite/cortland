@@ -1,4 +1,4 @@
-# honeycrisp-folders
+# cortland-folders
 
 **The filesystem is the interface.** Watched folders run declared pipelines:
 drop a file in from any device that can reach the folder (iCloud Drive makes
@@ -43,7 +43,7 @@ a row to the suite's shared audit DB.
 ## Running
 
 ```
-honeycrisp-folders ~/Library/Mobile\ Documents/com~apple~CloudDocs/Agents
+cortland-folders ~/Library/Mobile\ Documents/com~apple~CloudDocs/Agents
 ```
 
 For always-on operation, install the launchd template in `launchd/`

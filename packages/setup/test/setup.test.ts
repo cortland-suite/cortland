@@ -35,12 +35,12 @@ describe("desktop config merge", () => {
       theme: "dark",
       mcpServers: { other: { command: "x", args: ["y"] } },
     };
-    const merged = withServer(existing, "honeycrisp-mail", "node", ["/srv.js"]);
+    const merged = withServer(existing, "cortland-mail", "node", ["/srv.js"]);
     expect(merged.theme).toBe("dark");
     expect(merged.mcpServers?.other.command).toBe("x");
-    expect(merged.mcpServers?.["honeycrisp-mail"].args).toEqual(["/srv.js"]);
-    expect(hasServer(merged, "honeycrisp-mail")).toBe(true);
-    expect(hasServer(existing, "honeycrisp-mail")).toBe(false); // pure merge
+    expect(merged.mcpServers?.["cortland-mail"].args).toEqual(["/srv.js"]);
+    expect(hasServer(merged, "cortland-mail")).toBe(true);
+    expect(hasServer(existing, "cortland-mail")).toBe(false); // pure merge
   });
 
   it("writes with a backup of the previous file", () => {

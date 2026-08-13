@@ -1,11 +1,11 @@
 #!/usr/bin/env node
-import { createGovernedServer } from "@honeycrisp/governed";
+import { createGovernedServer } from "@cortland/governed";
 import { noteTools, VERSION } from "./tools.js";
 
 const { connectStdio } = createGovernedServer({
-  name: "honeycrisp-notes",
+  name: "cortland-notes",
   version: VERSION,
-  appName: "honeycrisp", // shared suite audit DB
+  appName: "cortland", // shared suite audit DB
   tools: noteTools,
 });
 

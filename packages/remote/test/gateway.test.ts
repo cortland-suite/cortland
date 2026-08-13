@@ -5,7 +5,7 @@ import path from "node:path";
 import { z } from "zod";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
-import { AuditStore, defineTool } from "@honeycrisp/governed";
+import { AuditStore, defineTool } from "@cortland/governed";
 import { startGateway } from "../src/gateway.js";
 import { TokenStore } from "../src/tokens.js";
 

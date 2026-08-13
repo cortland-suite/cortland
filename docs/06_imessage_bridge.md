@@ -44,7 +44,7 @@ decision. Timeout, wrong nonce, unknown sender: deny. This is the same trust
 class as the folder channel (surface: Apple-authenticated infrastructure the
 model cannot write to) with the UX of texting "yes 4f2a1c".
 
-## Architecture (@honeycrisp/imessage)
+## Architecture (@cortland/imessage)
 
 - **chatdb.ts** — read-only SQLite on `~/Library/Messages/chat.db` (needs
   Full Disk Access). Incremental ROWID cursor; sender allowlist IN the SQL;
@@ -68,7 +68,7 @@ model cannot write to) with the UX of texting "yes 4f2a1c".
 - **bridge.ts** — the daemon: poll inbound (owner-only) → brain → reply via
   send-to-owner. Every inbound command, reply, ignored-sender count, and
   approval outcome is an audit row.
-- **cli.ts** — `honeycrisp-imessage run | status | test`, launchd template.
+- **cli.ts** — `cortland-imessage run | status | test`, launchd template.
 
 ## The fourth law (added after the landscape research, same day)
 

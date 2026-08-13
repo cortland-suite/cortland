@@ -1,4 +1,4 @@
-# @honeycrisp/reminders
+# @cortland/reminders
 
 Apple Reminders over MCP, governed. Five tools, three trust tiers:
 
@@ -18,5 +18,5 @@ Every action lands in the suite's shared audit DB. First use triggers the
 macOS Automation prompt (your MCP host → Reminders).
 
 ```
-claude mcp add --scope user honeycrisp-reminders npx -- -y @honeycrisp/reminders
+claude mcp add --scope user cortland-reminders npx -- -y @cortland/reminders
 ```

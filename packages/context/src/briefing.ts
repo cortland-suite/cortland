@@ -38,7 +38,7 @@ export async function generateBriefing(
   lines.push("");
   const provider = opts.provider ?? null;
   lines.push(
-    `<!-- created by honeycrisp-context v${opts.version}` +
+    `<!-- created by cortland-context v${opts.version}` +
       (provider
         ? ` (Layer 1: ${provider.name}, egress=${provider.network ? "network" : "local"})`
         : " (deterministic; no model)") +
@@ -193,7 +193,7 @@ export async function generateBriefing(
   lines.push("");
   lines.push("---");
   lines.push(
-    `_Citations are Message-IDs — resolvable via honeycrisp-mail (\`mail_read\`)._`
+    `_Citations are Message-IDs — resolvable via cortland-mail (\`mail_read\`)._`
   );
   lines.push("");
   return lines.join("\n");

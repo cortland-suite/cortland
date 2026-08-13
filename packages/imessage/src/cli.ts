@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * honeycrisp-imessage — text your local AI.
+ * cortland-imessage — text your local AI.
  *
  *   setup --owner <handle> [--model <name>]   write the config block
  *   status                                     preflight: config, FDA, model, tools
@@ -22,7 +22,7 @@ import {
   loadConfig,
   type ExecutionDeps,
   type GovernedToolDef,
-} from "@honeycrisp/governed";
+} from "@cortland/governed";
 import { ImessageApprovalChannel } from "./approval.js";
 import { runBrain, type ChatMessage } from "./brain.js";
 import { runBridge } from "./bridge.js";
@@ -36,7 +36,7 @@ const VERSION = "0.1.0";
 const require = createRequire(import.meta.url);
 
 assertCleanArgv(process.argv);
-const dataDir = defaultDataDir("honeycrisp");
+const dataDir = defaultDataDir("cortland");
 const [, , command, ...rest] = process.argv;
 
 function runCommand(cmd: string, args: string[]): Promise<{ ok: boolean; output: string }> {
@@ -58,10 +58,10 @@ async function resolveTools(
   log: (m: string) => void
 ): Promise<Array<Readonly<GovernedToolDef<Record<string, unknown>>>>> {
   const wanted: Array<[string, string, string]> = [
-    ["@honeycrisp/mail", "dist/tools.js", "mailTools"],
-    ["@honeycrisp/reminders", "dist/tools.js", "reminderTools"],
-    ["@honeycrisp/notes", "dist/tools.js", "noteTools"],
-    ["@honeycrisp/calendar", "dist/tools.js", "calendarTools"],
+    ["@cortland/mail", "dist/tools.js", "mailTools"],
+    ["@cortland/reminders", "dist/tools.js", "reminderTools"],
+    ["@cortland/notes", "dist/tools.js", "noteTools"],
+    ["@cortland/calendar", "dist/tools.js", "calendarTools"],
   ];
   const tools: Array<Readonly<GovernedToolDef<Record<string, unknown>>>> = [];
   for (const [pkg, entry, exportName] of wanted) {
@@ -147,12 +147,12 @@ if (command === "setup" && rest.includes("--discover")) {
   console.log(`Found you:       ${found.owner}`);
   console.log(`Found assistant: ${found.assistant}`);
   console.log(`model:           ${config.model.model}`);
-  console.log(`\nOnly ${found.owner} will ever be obeyed. Next: honeycrisp-imessage status`);
+  console.log(`\nOnly ${found.owner} will ever be obeyed. Next: cortland-imessage status`);
 } else if (command === "setup") {
   const owner = flag("owner");
   if (!owner) {
     console.error(
-      "usage: honeycrisp-imessage setup --owner <your phone/Apple ID> [--model <name>]\n" +
+      "usage: cortland-imessage setup --owner <your phone/Apple ID> [--model <name>]\n" +
         "  The owner handle is the ONLY sender the bridge will ever obey.\n" +
         '  Phone numbers must be E.164, exactly as Messages stores them: "+15551234567".'
     );
@@ -171,7 +171,7 @@ if (command === "setup" && rest.includes("--discover")) {
   console.log(
     "\nNext: sign Messages.app into the assistant's Apple ID, grant this\n" +
       "process Full Disk Access (chat.db) and Automation → Messages, then run:\n" +
-      "  honeycrisp-imessage status"
+      "  cortland-imessage status"
   );
 } else if (command === "status" || command === "run") {
   // Config problems are the common case for a human at a terminal: report
@@ -189,7 +189,7 @@ if (command === "setup" && rest.includes("--discover")) {
     await run(config);
   }
 } else if (command === "install" || command === "uninstall") {
-  const label = "com.honeycrisp.imessage";
+  const label = "com.cortland.imessage";
   const plistPath = path.join(os.homedir(), "Library", "LaunchAgents", `${label}.plist`);
   if (command === "uninstall") {
     await runCommand("launchctl", ["unload", "-w", plistPath]);
@@ -211,7 +211,7 @@ if (command === "setup" && rest.includes("--discover")) {
     if (load.ok) {
       console.log(`installed and started: ${plistPath}`);
       console.log("The bridge now runs whenever your Mac is on.");
-      console.log(`Stop it with: honeycrisp-imessage uninstall`);
+      console.log(`Stop it with: cortland-imessage uninstall`);
     } else {
       console.log(`wrote ${plistPath}`);
       console.log(`could not start it: ${load.output}`);
@@ -219,13 +219,13 @@ if (command === "setup" && rest.includes("--discover")) {
     }
   }
 } else {
-  console.log(`honeycrisp-imessage v${VERSION}`);
+  console.log(`cortland-imessage v${VERSION}`);
   console.log(
     "usage:\n" +
-      "  honeycrisp-imessage setup --discover [--model m] [--name n] [--about a]\n" +
+      "  cortland-imessage setup --discover [--model m] [--name n] [--about a]\n" +
       "      text the assistant from your phone; both handles are detected\n" +
-      "  honeycrisp-imessage setup --owner <handle> --assistant <account> [...]\n" +
-      "  honeycrisp-imessage status | run | install | uninstall"
+      "  cortland-imessage setup --owner <handle> --assistant <account> [...]\n" +
+      "  cortland-imessage status | run | install | uninstall"
   );
   process.exit(command ? 2 : 0);
 }

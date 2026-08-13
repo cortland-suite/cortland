@@ -1,4 +1,4 @@
-# honeycrisp-notes
+# cortland-notes
 
 Apple Notes over MCP, built on the [governed framework](../governed/). Reads are
 free (and fenced), creating a note is write-safe, appending to one is gated

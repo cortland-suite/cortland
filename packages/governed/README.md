@@ -1,4 +1,4 @@
-# @honeycrisp/governed
+# @cortland/governed
 
 **MCP tools you'd let touch your actual life.** A TypeScript framework that makes
 "governed" a property enforced by construction, not a promise in a README.
@@ -35,7 +35,7 @@ wrapper. Every tool built on it gets, automatically:
 
 ```ts
 import { z } from "zod";
-import { createGovernedServer, defineTool } from "@honeycrisp/governed";
+import { createGovernedServer, defineTool } from "@cortland/governed";
 
 const noteCreate = defineTool({
   name: "note_create",          // verb_noun, enforced

@@ -1,12 +1,12 @@
 {
-  "name": "@honeycrisp/folders",
+  "name": "@cortland/folders",
   "version": "0.2.0",
   "description": "Folder-as-API: watched folders run declared local pipelines; results land beside the drop; every run is audited",
   "license": "MIT",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
-    "honeycrisp-folders": "dist/cli.js"
+    "cortland-folders": "dist/cli.js"
   },
   "files": [
     "dist",
@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "chokidar": "^4.0.0",
-    "@honeycrisp/governed": "^0.2.0",
+    "@cortland/governed": "^0.2.0",
     "yaml": "^2.6.0",
     "zod": "^3.24.0"
   },
@@ -47,11 +47,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/honeycrisp-suite/honeycrisp.git",
+    "url": "git+https://github.com/cortland-suite/cortland.git",
     "directory": "packages/folders"
   },
-  "homepage": "https://github.com/honeycrisp-suite/honeycrisp#readme",
+  "homepage": "https://github.com/cortland-suite/cortland#readme",
   "bugs": {
-    "url": "https://github.com/honeycrisp-suite/honeycrisp/issues"
+    "url": "https://github.com/cortland-suite/cortland/issues"
   }
 }

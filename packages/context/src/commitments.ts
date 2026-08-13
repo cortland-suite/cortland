@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { z } from "zod";
-import { fence, runJxa } from "@honeycrisp/governed";
+import { fence, runJxa } from "@cortland/governed";
 import { extractJsonArray, type ModelProvider } from "./model.js";
 import type { ContextStore } from "./store.js";
 

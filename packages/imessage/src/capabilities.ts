@@ -1,4 +1,4 @@
-import type { GovernedToolDef } from "@honeycrisp/governed";
+import type { GovernedToolDef } from "@cortland/governed";
 
 /**
  * "What can you do?" answered from the mounted tools themselves. Grouped by

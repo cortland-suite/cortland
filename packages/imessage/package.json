@@ -1,13 +1,13 @@
 {
-  "name": "@honeycrisp/imessage",
+  "name": "@cortland/imessage",
   "version": "0.2.0",
   "description": "The iMessage bridge: text your local AI, approve gated actions by replying — owner-only by construction, rate-disciplined, audited",
   "license": "MIT",
   "type": "module",
   "main": "dist/bridge.js",
-  "mcpName": "io.github.honeycrisp-suite/imessage",
+  "mcpName": "io.github.cortland-suite/imessage",
   "bin": {
-    "honeycrisp-imessage": "dist/cli.js"
+    "cortland-imessage": "dist/cli.js"
   },
   "files": [
     "dist",
@@ -35,15 +35,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/honeycrisp-suite/honeycrisp.git",
+    "url": "git+https://github.com/cortland-suite/cortland.git",
     "directory": "packages/imessage"
   },
-  "homepage": "https://github.com/honeycrisp-suite/honeycrisp#readme",
+  "homepage": "https://github.com/cortland-suite/cortland#readme",
   "bugs": {
-    "url": "https://github.com/honeycrisp-suite/honeycrisp/issues"
+    "url": "https://github.com/cortland-suite/cortland/issues"
   },
   "dependencies": {
-    "@honeycrisp/governed": "^0.2.0",
+    "@cortland/governed": "^0.2.0",
     "better-sqlite3": "^11.10.0",
     "zod": "^3.24.0"
   },

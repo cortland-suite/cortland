@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { defineTool, runJxa } from "@honeycrisp/governed";
+import { defineTool, runJxa } from "@cortland/governed";
 import { FDA_INSTRUCTIONS, hasFullDiskAccess, searchFulltext } from "./fulltext.js";
 import {
   buildDraftScript,

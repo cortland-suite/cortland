@@ -1,13 +1,13 @@
 {
-  "name": "@honeycrisp/notes",
+  "name": "@cortland/notes",
   "version": "0.2.0",
   "description": "Apple Notes over MCP, governed: reads fenced and HTML-stripped, creation provenance-stamped, appending gated with native undo — the prior body captured before the write",
   "license": "MIT",
   "type": "module",
   "main": "dist/server.js",
-  "mcpName": "io.github.honeycrisp-suite/notes",
+  "mcpName": "io.github.cortland-suite/notes",
   "bin": {
-    "honeycrisp-notes": "dist/server.js"
+    "cortland-notes": "dist/server.js"
   },
   "files": [
     "dist",
@@ -35,15 +35,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/honeycrisp-suite/honeycrisp.git",
+    "url": "git+https://github.com/cortland-suite/cortland.git",
     "directory": "packages/notes"
   },
-  "homepage": "https://github.com/honeycrisp-suite/honeycrisp#readme",
+  "homepage": "https://github.com/cortland-suite/cortland#readme",
   "bugs": {
-    "url": "https://github.com/honeycrisp-suite/honeycrisp/issues"
+    "url": "https://github.com/cortland-suite/cortland/issues"
   },
   "dependencies": {
-    "@honeycrisp/governed": "^0.2.0",
+    "@cortland/governed": "^0.2.0",
     "zod": "^3.24.0"
   },
   "devDependencies": {

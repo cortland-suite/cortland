@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * `honeycrisp setup` — interactive onboarding.
+ * `cortland setup` — interactive onboarding.
  *
  * House doctrine applies to the wizard itself: every action is proposed and
  * confirmed before it happens, nothing is silent, and everything performed is
@@ -9,7 +9,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import readline from "node:readline/promises";
-import { AuditStore, assertCleanArgv, defaultDataDir } from "@honeycrisp/governed";
+import { AuditStore, assertCleanArgv, defaultDataDir } from "@cortland/governed";
 import {
   claudeDesktopConfigPath,
   commandExists,
@@ -29,14 +29,14 @@ import { createAgentsFolder } from "./starter.js";
 import { installPlist, renderPlist, renderTemplate } from "./launchd.js";
 
 const VERSION = "0.1.0";
-const SERVER_NAME = "honeycrisp-mail";
+const SERVER_NAME = "cortland-mail";
 
 assertCleanArgv(process.argv);
 
 const command = process.argv[2];
 if (command !== "setup") {
-  console.log(`honeycrisp v${VERSION}`);
-  console.log("usage: honeycrisp setup [--icloud-root <path>]");
+  console.log(`cortland v${VERSION}`);
+  console.log("usage: cortland setup [--icloud-root <path>]");
   process.exit(command ? 2 : 0);
 }
 const rootFlagIndex = process.argv.indexOf("--icloud-root");
@@ -44,7 +44,7 @@ const icloudRootOverride =
   rootFlagIndex > -1 ? process.argv[rootFlagIndex + 1] : undefined;
 
 const paths = suitePaths();
-const audit = new AuditStore(defaultDataDir("honeycrisp"));
+const audit = new AuditStore(defaultDataDir("cortland"));
 const interactive = process.stdin.isTTY === true;
 const rl = interactive
   ? readline.createInterface({ input: process.stdin, output: process.stdout })
@@ -97,7 +97,7 @@ async function confirm(question: string): Promise<boolean> {
   }
 }
 
-console.log(`\nhoneycrisp setup v${VERSION}`);
+console.log(`\ncortland setup v${VERSION}`);
 console.log("Local-first, no accounts, no credentials. Every step below asks first.\n");
 
 // ─── 1. Mail server sanity ────────────────────────────────────────────────
@@ -109,10 +109,10 @@ if (!fs.existsSync(paths.mailServer)) {
 // ─── 2. Register with MCP clients ─────────────────────────────────────────
 console.log("── MCP clients");
 const servers: Array<{ name: string; args: string[] }> = [
-  { name: "honeycrisp-mail", args: [paths.mailServer] },
+  { name: "cortland-mail", args: [paths.mailServer] },
 ];
 if (fs.existsSync(paths.contextCli)) {
-  servers.push({ name: "honeycrisp-context", args: [paths.contextCli, "serve"] });
+  servers.push({ name: "cortland-context", args: [paths.contextCli, "serve"] });
 }
 
 if (await commandExists("claude")) {
@@ -256,7 +256,7 @@ if (fs.existsSync(paths.contextCli)) {
         REPLACE_NODE_PATH: process.execPath,
         REPLACE_CLI_PATH: paths.contextCli,
       }),
-      "com.honeycrisp.context-capture"
+      "com.cortland.context-capture"
     );
     const load = await run("launchctl", ["load", "-w", target]);
     console.log(load.ok ? `  installed and loaded: ${target}` : `  load failed: ${load.output}`);
@@ -275,13 +275,13 @@ if (fs.existsSync(paths.contextCli)) {
         REPLACE_CLI_PATH: paths.contextCli,
         REPLACE_ARG: briefDir,
       }),
-      "com.honeycrisp.context-brief"
+      "com.cortland.context-brief"
     );
     const load = await run("launchctl", ["load", "-w", target]);
     console.log(load.ok ? `  installed and loaded: ${target}` : `  load failed: ${load.output}`);
     if (load.ok) record("install_context_brief_schedule", briefDir);
     console.log(
-      "  Tip: allowlist calendars first — `honeycrisp-context calendars` shows names; " +
+      "  Tip: allowlist calendars first — `cortland-context calendars` shows names; " +
         "add {\"calendars\": [...]} to the suite's context.json."
     );
   } else skipped.push("morning briefing schedule");
@@ -301,7 +301,7 @@ if (!fs.existsSync(icloudRoot)) {
   )
 ) {
   try {
-    const result = configureFolderApprovals(icloudRoot, defaultDataDir("honeycrisp"));
+    const result = configureFolderApprovals(icloudRoot, defaultDataDir("cortland"));
     console.log(`  approvals folder: ${result.approvalsDir}`);
     console.log(`  config updated: ${result.configFile}`);
     console.log(
@@ -316,7 +316,7 @@ if (!fs.existsSync(icloudRoot)) {
           "per request — the message carries no details, just 'go look')?"
       )
     ) {
-      const notify = configureApprovalNotify(defaultDataDir("honeycrisp"));
+      const notify = configureApprovalNotify(defaultDataDir("cortland"));
       console.log(`  push topic minted: ${notify.topic}`);
       console.log(
         "  On your phone: install the free ntfy app and subscribe to that " +
@@ -340,7 +340,7 @@ for (const line of performed) console.log(`  ✓ ${line}`);
 for (const line of skipped) console.log(`  · skipped: ${line}`);
 console.log(
   "\nEvery action above was recorded in the audit DB " +
-    "(~/Library/Application Support/honeycrisp/audit.db).\n" +
+    "(~/Library/Application Support/cortland/audit.db).\n" +
     "Remember the doctrine: reads are free, drafts can't send, writes are gated, " +
     "and live mode is off until you opt in.\n"
 );

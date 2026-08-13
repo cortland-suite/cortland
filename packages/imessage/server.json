@@ -1,16 +1,16 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.honeycrisp-suite/imessage",
+  "name": "io.github.cortland-suite/imessage",
   "description": "Text your local AI: iMessage bridge with owner-only commands and approval by reply.",
   "repository": {
-    "url": "https://github.com/honeycrisp-suite/honeycrisp",
+    "url": "https://github.com/cortland-suite/cortland",
     "source": "github"
   },
   "version": "0.2.0",
   "packages": [
     {
       "registryType": "npm",
-      "identifier": "@honeycrisp/imessage",
+      "identifier": "@cortland/imessage",
       "version": "0.2.0",
       "transport": {
         "type": "stdio"

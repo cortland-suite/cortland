@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
-import { AuditStore, assertCleanArgv, createGovernedServer, defaultDataDir, runJxa } from "@honeycrisp/governed";
+import { AuditStore, assertCleanArgv, createGovernedServer, defaultDataDir, runJxa } from "@cortland/governed";
 import { generateBriefing } from "./briefing.js";
 import { captureCalendar, loadContextConfig } from "./calendar.js";
 import { captureOnce } from "./capture.js";
@@ -17,7 +17,7 @@ const VERSION = "0.1.0";
 
 assertCleanArgv(process.argv);
 
-const dataDir = defaultDataDir("honeycrisp"); // shared suite home (NOTES Q4)
+const dataDir = defaultDataDir("cortland"); // shared suite home (NOTES Q4)
 const command = process.argv[2] ?? "serve";
 
 if (command === "capture") {
@@ -136,13 +136,13 @@ if (command === "capture") {
   const store = new ContextStore(dataDir);
   const audit = new AuditStore(dataDir);
   const { connectStdio } = createGovernedServer({
-    name: "honeycrisp-context",
+    name: "cortland-context",
     version: VERSION,
-    appName: "honeycrisp",
+    appName: "cortland",
     tools: makeContextTools(store, audit, VERSION),
   });
   await connectStdio();
 } else {
-  console.error("usage: honeycrisp-context [serve|capture|brief [dir]|calendars]");
+  console.error("usage: cortland-context [serve|capture|brief [dir]|calendars]");
   process.exit(2);
 }

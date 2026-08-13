@@ -1,4 +1,4 @@
-import type { GovernedToolDef } from "@honeycrisp/governed";
+import type { GovernedToolDef } from "@cortland/governed";
 
 type Tool = Readonly<GovernedToolDef<Record<string, unknown>>>;
 

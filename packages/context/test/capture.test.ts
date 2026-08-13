@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { AuditStore } from "@honeycrisp/governed";
+import { AuditStore } from "@cortland/governed";
 import { captureOnce } from "../src/capture.js";
 import { buildCaptureScript } from "../src/scripts.js";
 import { ContextStore } from "../src/store.js";

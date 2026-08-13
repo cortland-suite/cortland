@@ -1,4 +1,4 @@
-# honeycrisp-mail
+# cortland-mail
 
 Apple Mail over MCP, built on the [governed framework](../governed/). Reads are
 free, drafts are write-safe, mutations are gated behind a native macOS approval

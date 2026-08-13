@@ -1,5 +1,5 @@
 /**
- * Capture-oriented JXA builders. Same safety rule as honeycrisp-mail: every
+ * Capture-oriented JXA builders. Same safety rule as cortland-mail: every
  * dynamic value is embedded via JSON.stringify, so nothing user-controlled can
  * escape its string literal. HEADERS ONLY — bodies are never fetched here.
  */

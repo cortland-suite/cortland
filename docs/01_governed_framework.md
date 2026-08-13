@@ -58,7 +58,7 @@ guarantees ("audit + gates for any MCP").
 
 ## Deliverable definition (the weekend target)
 
-- `@honeycrisp/governed` package: defineTool, the wrapper, audit store, approval channel v1.
+- `@cortland/governed` package: defineTool, the wrapper, audit store, approval channel v1.
 - One demo tool per mode (a read, a gated write) against something trivial (Reminders?).
 - README that leads with the doctrine — the marketing IS the contract.
 - Test suite: gate cannot be bypassed via config error; audit row exists for every

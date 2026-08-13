@@ -207,7 +207,7 @@ function renderRequest(req: ApprovalRequest, id: string, timeoutMs: number): str
       : `${Math.round(timeoutMs / 60_000)} minutes`;
   const heading =
     req.mode === "destructive" ? "DESTRUCTIVE action needs approval" : "Approval needed";
-  return `<!-- honeycrisp-approval v1 id=${id} -->
+  return `<!-- cortland-approval v1 id=${id} -->
 # ${heading}: ${req.tool}
 
 - **Tool:** ${req.tool}

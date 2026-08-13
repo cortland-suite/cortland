@@ -1,11 +1,11 @@
-# @honeycrisp/setup
+# @cortland/setup
 
-Interactive onboarding for the Honeycrisp suite. One command, every step
+Interactive onboarding for the Cortland suite. One command, every step
 proposed and confirmed before it happens, everything recorded in the suite's
 shared audit DB:
 
 ```
-honeycrisp setup
+cortland setup
 ```
 
 What it offers (each step is a y/N question, defaulting to No):
@@ -20,11 +20,11 @@ What it offers (each step is a y/N question, defaulting to No):
 4. **Context schedules** — mail+calendar capture every 15 minutes, morning
    briefing at 7:00, both via launchd.
 5. **Remote approvals** — routes gated-write approvals through an iCloud
-   folder so you can approve from any device (see `@honeycrisp/governed` for
+   folder so you can approve from any device (see `@cortland/governed` for
    the channel's threat model).
 
 Non-interactive use: pipe y/n answers, one per line (`printf 'y\nn\ny\n' |
-honeycrisp setup`); missing answers default to No.
+cortland setup`); missing answers default to No.
 
 House doctrine applies to the wizard itself: nothing is silent, nothing is
 destructive, and live mode stays off until you opt in.

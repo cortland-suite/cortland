@@ -1,6 +1,6 @@
 import { parse as parseYaml } from "yaml";
 import { z } from "zod";
-import { fence } from "@honeycrisp/governed";
+import { fence } from "@cortland/governed";
 import type { ModelProvider } from "./model.js";
 import type { ContextStore } from "./store.js";
 

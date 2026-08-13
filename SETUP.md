@@ -1,4 +1,4 @@
-# Setting up Honeycrisp
+# Setting up Cortland
 
 From a clean Mac to a working governed assistant — including the optional
 iMessage bridge, where you text a local AI and it works on your real data.
@@ -15,9 +15,9 @@ section that follows.
 
 ```bash
 # 1. the suite
-npm install -g @honeycrisp/setup @honeycrisp/mail @honeycrisp/reminders \
-  @honeycrisp/notes @honeycrisp/calendar @honeycrisp/context
-honeycrisp setup                      # wizard: MCP clients, permissions, folders
+npm install -g @cortland/setup @cortland/mail @cortland/reminders \
+  @cortland/notes @cortland/calendar @cortland/context
+cortland setup                      # wizard: MCP clients, permissions, folders
 
 # 2. a local model (only for the iMessage bridge)
 brew install ollama
@@ -25,23 +25,23 @@ brew services start ollama            # persistent — survives reboot
 ollama pull gemma4:e2b-it-qat         # 4.3 GB, fits an 8 GB Mac
 
 # 3. the iMessage bridge
-npm install -g @honeycrisp/imessage
+npm install -g @cortland/imessage
 #    → first: create a second Apple ID and sign Messages.app into it (§5.1)
 #    → then: grant Full Disk Access to your terminal AND `which node` (§2)
-honeycrisp-imessage setup --discover \
+cortland-imessage setup --discover \
   --model gemma4:e2b-it-qat \
   --name "Your Name" \
   --about "Central timezone. Prefer brief answers."
 #    → it waits; text the assistant from your phone; both handles are detected
 
-honeycrisp-imessage status            # every line should be green
-honeycrisp-imessage install           # launchd: runs whenever the Mac is on
+cortland-imessage status            # every line should be green
+cortland-imessage install           # launchd: runs whenever the Mac is on
 
 # 4. allow writes (still asks per action)
-#    edit ~/Library/Application Support/honeycrisp/config.json → "live": true
+#    edit ~/Library/Application Support/cortland/config.json → "live": true
 ```
 
-To stop everything: `honeycrisp-imessage uninstall`, or set `"live": false`
+To stop everything: `cortland-imessage uninstall`, or set `"live": false`
 for an instant read-only mode that needs no restart.
 
 ---
@@ -60,9 +60,9 @@ for an instant read-only mode that needs no restart.
 ## 1. Install
 
 ```bash
-npm install -g @honeycrisp/setup @honeycrisp/mail @honeycrisp/reminders \
-  @honeycrisp/notes @honeycrisp/calendar @honeycrisp/context
-honeycrisp setup
+npm install -g @cortland/setup @cortland/mail @cortland/reminders \
+  @cortland/notes @cortland/calendar @cortland/context
+cortland setup
 ```
 
 The wizard asks before every step (default is always **No**) and writes what it
@@ -113,7 +113,7 @@ node -e 'require("fs").accessSync(process.env.HOME+"/Library/Messages/chat.db");
 tools (send, delete, move, mark) return a preview instead of acting.
 
 Config lives at
-`~/Library/Application Support/honeycrisp/config.json`:
+`~/Library/Application Support/cortland/config.json`:
 
 ```json
 {
@@ -155,12 +155,12 @@ never what. The topic name is the secret; the wizard mints an unguessable one.
 
 Once registered, just talk to your assistant: *"what did I miss this week?"*,
 *"draft a reply saying Thursday works"*, *"remind me to bring the contract."*
-The tools are invisible; you'll only notice Honeycrisp when it asks permission.
+The tools are invisible; you'll only notice Cortland when it asks permission.
 
 Verify from a terminal:
 
 ```bash
-claude mcp list | grep honeycrisp
+claude mcp list | grep cortland
 ```
 
 ---
@@ -198,7 +198,7 @@ The handle Messages stores is rarely the one you'd type (E.164 `+15551234567`,
 or an Apple ID). So don't type it — let setup watch for your message:
 
 ```bash
-honeycrisp-imessage setup --discover --model gemma4:e2b-it-qat \
+cortland-imessage setup --discover --model gemma4:e2b-it-qat \
   --name "Your Name" --about "Central timezone. Prefer brief answers."
 ```
 
@@ -225,7 +225,7 @@ The newest row shows your handle (`from`) and the assistant account (`to`).
 Phone numbers must be **E.164** — `+15551234567`, exactly as printed. Then:
 
 ```bash
-honeycrisp-imessage setup --owner "+15551234567" \
+cortland-imessage setup --owner "+15551234567" \
   --assistant "assistant@example.com" --model gemma4:e2b-it-qat
 ```
 
@@ -234,9 +234,9 @@ honeycrisp-imessage setup --owner "+15551234567" \
 ### 5.4 Check and run
 
 ```bash
-honeycrisp-imessage status      # every line should be green
-honeycrisp-imessage run         # foreground; Ctrl-C to stop
-honeycrisp-imessage install     # launchd: starts it now and on every boot
+cortland-imessage status      # every line should be green
+cortland-imessage run         # foreground; Ctrl-C to stop
+cortland-imessage install     # launchd: starts it now and on every boot
 ```
 
 `status` checks the five things that actually break: owner allowlist, assistant
@@ -290,9 +290,9 @@ tools cost ~2,400 tokens of schema before you type a word).
 ## 7. Remote access (other devices)
 
 ```bash
-npm install -g @honeycrisp/remote
-honeycrisp-remote token mint --label my-laptop   # shown once; only a hash is stored
-honeycrisp-remote serve
+npm install -g @cortland/remote
+cortland-remote token mint --label my-laptop   # shown once; only a hash is stored
+cortland-remote serve
 tailscale serve --bg 7811                        # reach it from your own devices
 ```
 
@@ -308,7 +308,7 @@ to you.
 **"chat.db not found — is Full Disk Access granted?"** — the *running* process
 lacks FDA. See §2, and restart the app afterward.
 
-**Bridge is silent.** `honeycrisp-imessage status`. Usual causes: ollama not
+**Bridge is silent.** `cortland-imessage status`. Usual causes: ollama not
 running, model not pulled, or the owner handle isn't in E.164 form.
 
 **The assistant answers, but never uses tools.** Your model can't tool-call (see
@@ -316,11 +316,11 @@ running, model not pulled, or the owner handle isn't in E.164 form.
 
 **Reminders land on absurd dates (1904, or years in the past).** You're on an
 old build: a model has no clock, so the system prompt must state today's date.
-Upgrade `@honeycrisp/imessage`.
+Upgrade `@cortland/imessage`.
 
 **"Tried setting that reminder, but I keep getting an error with the date
 format."** Old build — schemas demanded UTC while Apple's apps are local-time.
-Upgrade `@honeycrisp/reminders` / `/calendar`.
+Upgrade `@cortland/reminders` / `/calendar`.
 
 **Approval prompts show a UUID instead of a name.** Old build; previews now
 describe the object. An approval you can't evaluate isn't consent — upgrade.
@@ -332,7 +332,7 @@ describe the object. An approval you can't evaluate isn't consent — upgrade.
 working. Read the audit log:
 
 ```bash
-sqlite3 ~/Library/Application\ Support/honeycrisp/audit.db \
+sqlite3 ~/Library/Application\ Support/cortland/audit.db \
   'SELECT ts,tool,outcome,approval_method,detail FROM audit ORDER BY ts DESC LIMIT 10'
 ```
 
@@ -345,11 +345,11 @@ couldn't be delivered. Both refuse rather than proceed.
 
 | Path | What |
 |---|---|
-| `~/Library/Application Support/honeycrisp/config.json` | Live mode, approvals, model, bridge settings |
-| `~/Library/Application Support/honeycrisp/audit.db` | Every action, approval, denial, dry-run |
-| `~/Library/Application Support/honeycrisp/context.db` | Context store (metadata + pointers, never message bodies) |
+| `~/Library/Application Support/cortland/config.json` | Live mode, approvals, model, bridge settings |
+| `~/Library/Application Support/cortland/audit.db` | Every action, approval, denial, dry-run |
+| `~/Library/Application Support/cortland/context.db` | Context store (metadata + pointers, never message bodies) |
 | `~/Library/Mobile Documents/…/Agents/` | Pipelines, `Briefings/`, `Approvals/` |
-| `~/Library/LaunchAgents/com.honeycrisp.*.plist` | Scheduled capture, briefing, bridge |
+| `~/Library/LaunchAgents/com.cortland.*.plist` | Scheduled capture, briefing, bridge |
 
 **Turning it off:** set `"live": false` for instant read-only, `launchctl
 unload -w` any agent to stop it, and delete the config to stop everything. The

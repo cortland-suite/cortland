@@ -2,7 +2,7 @@ import {
   executeGoverned,
   type ExecutionDeps,
   type GovernedToolDef,
-} from "@honeycrisp/governed";
+} from "@cortland/governed";
 import { z, type ZodTypeAny } from "zod";
 
 /**

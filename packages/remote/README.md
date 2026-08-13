@@ -1,4 +1,4 @@
-# @honeycrisp/remote
+# @cortland/remote
 
 The suite's governed MCP servers, reachable beyond the terminal they run in —
 with the contract intact. One gateway process serves the mail and context
@@ -6,9 +6,9 @@ tools over MCP streamable HTTP on **loopback only**; going further than this
 Mac is always an explicit, separate step you take with your own tunnel.
 
 ```
-honeycrisp-remote token mint --label my-laptop     # shown once, hashed on disk
-honeycrisp-remote serve                            # foreground
-honeycrisp-remote on | off | status                # launchd lifecycle
+cortland-remote token mint --label my-laptop     # shown once, hashed on disk
+cortland-remote serve                            # foreground
+cortland-remote on | off | status                # launchd lifecycle
 ```
 
 Mounts appear at `http://127.0.0.1:7811/mcp/mail` and `/mcp/context`

@@ -1,11 +1,11 @@
 # 05 — The Remote Access Tier (drafted 2026-07-31)
 
-**Thesis:** mainstream users will not drive Honeycrisp from a terminal on the Mac.
+**Thesis:** mainstream users will not drive Cortland from a terminal on the Mac.
 They live in the Claude, ChatGPT, and Gemini apps — phone, desktop, web (field
 verdict, 2026-07-31, from the suite's first real phone session). Desktop apps can
 launch our stdio servers today and are already served. Phone apps and the web
 cannot: those clients run in the vendor's cloud and reach tools by fetching a
-**remote MCP server over HTTPS**. Honeycrisp's data and capabilities are
+**remote MCP server over HTTPS**. Cortland's data and capabilities are
 irreducibly Mac-side — the AppleScript bridge to Mail, the context store, the
 audit ledger. The remote tier is the bridge: the same governed servers, exposed
 deliberately, with the contract intact.
@@ -29,7 +29,7 @@ single fact drives most of the security design below.
 ## Exposure ladder (each rung is an explicit human step)
 
 0. **stdio only** — today's default. Nothing listens on any port.
-1. **Loopback HTTP** — `honeycrisp remote serve` binds 127.0.0.1 only. Useful
+1. **Loopback HTTP** — `cortland remote serve` binds 127.0.0.1 only. Useful
    for local HTTP clients and testing. No auth required beyond the OS user.
 2. **Tailnet** — the loopback port shared over Tailscale to the user's own
    devices/agents. Private, end-to-end, no public exposure. Bearer token
@@ -45,11 +45,11 @@ downward. A config parse failure at rung N serves rung 0 (refuses to listen).
 
 ## Architecture
 
-One new package: **@honeycrisp/remote** — a gateway process, not a rewrite.
+One new package: **@cortland/remote** — a gateway process, not a rewrite.
 
 - Mounts the existing governed servers (mail, context) under one origin:
   `/mcp/mail`, `/mcp/context`. They keep their own identities, tool sets, and
-  the shared audit DB. Zero changes to @honeycrisp/mail or /context.
+  the shared audit DB. Zero changes to @cortland/mail or /context.
 - MCP **streamable HTTP** transport from the official SDK, one session per
   client, Origin-header validation on (the spec's DNS-rebinding defense),
   loopback bind ONLY — public reachability is always a tunnel's job, never a
@@ -57,7 +57,7 @@ One new package: **@honeycrisp/remote** — a gateway process, not a rewrite.
 - Every HTTP request annotates the audit trail: principal (token id / OAuth
   subject), origin, session id. The audit row for a remote gated write shows
   WHO asked from WHERE alongside the existing what/when/outcome.
-- launchd template + `honeycrisp remote on|off|status`. `off` is the kill
+- launchd template + `cortland remote on|off|status`. `off` is the kill
   switch: unload the agent, close the port, revoke nothing silently.
 
 ## Auth
@@ -122,7 +122,7 @@ migration rides the SDK upgrade.
 - **M0 — spike:** governed server over streamable HTTP on loopback; the
   existing test suite's gate tests re-run against the HTTP transport.
   Exit: elicitation and denial behave identically over HTTP and stdio.
-- **M1 — gateway: BUILT 2026-08-01.** @honeycrisp/remote: loopback-only
+- **M1 — gateway: BUILT 2026-08-01.** @cortland/remote: loopback-only
   streamable-HTTP mounts for mail+context, bearer tokens (secret shown once,
   SHA-256 + metadata on disk — strictly better than Keychain-storing the
   secret, since there is nothing to steal), read/write scopes with pre-gate

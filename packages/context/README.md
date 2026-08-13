@@ -1,4 +1,4 @@
-# honeycrisp-context
+# cortland-context
 
 The context layer, milestone 1. A local store of **derived metadata and
 pointers** over Apple Mail — never copies. See `docs/04_context_layer.md` for
@@ -8,14 +8,14 @@ the full design.
 
 `context.db` (created mode 600) holds headers, a people graph, and Message-ID
 pointers. There is no body column in any table — a test enforces this. Content
-is fetched live through `honeycrisp-mail` by consumers who hold that permission;
+is fetched live through `cortland-mail` by consumers who hold that permission;
 the serve layer itself needs no Mail access at all.
 
 ## Usage
 
 ```
-honeycrisp-context capture   # one incremental sweep (headers only, ~seconds)
-honeycrisp-context serve     # MCP server: context_changes, context_person,
+cortland-context capture   # one incremental sweep (headers only, ~seconds)
+cortland-context serve     # MCP server: context_changes, context_person,
                            # context_capture_now
 ```
 
@@ -33,7 +33,7 @@ next sweep.
 
 ## The briefing pipeline (M2–M4)
 
-`honeycrisp-context brief <dir>` runs the full cycle: ingest corrections from
+`cortland-context brief <dir>` runs the full cycle: ingest corrections from
 prior briefing files → extract commitments from recent sent mail (Layer 1) →
 answer standing questions → write today's briefing.
 

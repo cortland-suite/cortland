@@ -1,4 +1,4 @@
-# @honeycrisp/imessage
+# @cortland/imessage
 
 **Text your own AI.** A second Apple ID signs into Messages on your Mac; you
 text it from your phone like any contact. A local model (Ollama — Gemma,
@@ -7,16 +7,16 @@ your real mail, reminders, notes, and calendar. Nothing leaves the Mac, and
 nothing consequential happens without your reply.
 
 ```
-honeycrisp-imessage setup \
+cortland-imessage setup \
   --owner "+15551234567" \
   --assistant "assistant@example.com" \
   --model gemma4:e2b-it-qat \
   --name "Your Name" \
   --about "Central timezone. Prefer brief answers."
 
-honeycrisp-imessage status     # preflight: config, chat.db access, model, tools
-honeycrisp-imessage run        # foreground
-honeycrisp-imessage install    # launchd: runs whenever the Mac is on
+cortland-imessage status     # preflight: config, chat.db access, model, tools
+cortland-imessage run        # foreground
+cortland-imessage install    # launchd: runs whenever the Mac is on
 ```
 
 ## The four laws (enforced in code, not prompts — see docs/06)

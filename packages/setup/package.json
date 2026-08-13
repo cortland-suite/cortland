@@ -1,11 +1,11 @@
 {
-  "name": "@honeycrisp/setup",
+  "name": "@cortland/setup",
   "version": "0.2.0",
   "description": "Interactive onboarding for the governed-MCP suite: client config, permission warm-up, iCloud agents folder, launchd",
   "license": "MIT",
   "type": "module",
   "bin": {
-    "honeycrisp": "dist/cli.js"
+    "cortland": "dist/cli.js"
   },
   "files": [
     "dist",
@@ -17,7 +17,7 @@
     "prepublishOnly": "npm run build && npm run test"
   },
   "dependencies": {
-    "@honeycrisp/governed": "^0.2.0"
+    "@cortland/governed": "^0.2.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
@@ -30,7 +30,7 @@
     "onboarding",
     "macos",
     "governed",
-    "honeycrisp"
+    "cortland"
   ],
   "engines": {
     "node": ">=20"
@@ -40,11 +40,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/honeycrisp-suite/honeycrisp.git",
+    "url": "git+https://github.com/cortland-suite/cortland.git",
     "directory": "packages/setup"
   },
-  "homepage": "https://github.com/honeycrisp-suite/honeycrisp#readme",
+  "homepage": "https://github.com/cortland-suite/cortland#readme",
   "bugs": {
-    "url": "https://github.com/honeycrisp-suite/honeycrisp/issues"
+    "url": "https://github.com/cortland-suite/cortland/issues"
   }
 }

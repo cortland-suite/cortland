@@ -10,7 +10,7 @@
  * First run triggers the macOS Automation prompt (this process → Reminders).
  */
 import { z } from "zod";
-import { createGovernedServer, defineTool, runJxa } from "@honeycrisp/governed";
+import { createGovernedServer, defineTool, runJxa } from "@cortland/governed";
 
 const VERSION = "0.1.0";
 
@@ -81,7 +81,7 @@ const reminderCreate = defineTool({
 const { connectStdio } = createGovernedServer({
   name: "governed-example-reminders",
   version: VERSION,
-  appName: "honeycrisp",
+  appName: "cortland",
   tools: [remindersList, reminderCreate],
 });
 

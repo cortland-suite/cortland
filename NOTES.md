@@ -5,7 +5,7 @@ Noodle pad. Record decisions with dates; move settled items to the bottom.
 ## OPEN QUESTIONS
 
 ### Naming
-SETTLED 2026-07-30: **Honeycrisp** — see DECISIONS.
+SETTLED 2026-07-30: **Cortland** — see DECISIONS.
 
 ### Framework contract (docs/01)
 (all settled as of 2026-07-29 — see DECISIONS. Contract is locked; code has begun.)
@@ -122,7 +122,7 @@ SETTLED 2026-07-30: **Honeycrisp** — see DECISIONS.
     information-free string (no tool, no summary, no id — asserted); https
     only (loopback excepted); every attempt is an audited egress row carrying
     the HOST only (the topic name is the secret — wizard mints
-    honeycrisp-<32hex>); a dead relay never delays or breaks the approval
+    cortland-<32hex>); a dead relay never delays or breaks the approval
     (proven with a blackholed port). Field note: ntfy.sh was UNREACHABLE from
     the dev network at build time (TCP never connects; DNS fine) — possibly
     down, possibly pfSense egress policy; the failure path behaved exactly as
@@ -131,7 +131,7 @@ SETTLED 2026-07-30: **Honeycrisp** — see DECISIONS.
     same mechanism would serve it.
 
 ### Remote access tier (docs/05)
-27. M1 BUILT + LIVE-VERIFIED 2026-08-01: @honeycrisp/remote gateway (see
+27. M1 BUILT + LIVE-VERIFIED 2026-08-01: @cortland/remote gateway (see
     docs/05 milestone note for the full shape). Design deltas worth recording:
     (a) tokens are NOT in the Keychain — the server stores only SHA-256 +
     metadata and shows the secret once, so there is no secret on the Mac at
@@ -176,7 +176,7 @@ SETTLED 2026-07-30: **Honeycrisp** — see DECISIONS.
     Context for all three: field verdict 2026-07-31 — users will come from
     Claude/ChatGPT/Gemini phone apps, desktop apps, and web, not remote-control
     sessions. Desktop is already served (stdio + elicitation). Phone/web needs
-    the remote tier: docs/05 drafted same day (exposure ladder 0→3, @honeycrisp/
+    the remote tier: docs/05 drafted same day (exposure ladder 0→3, @cortland/
     remote gateway, bearer→OAuth, stolen-token-still-can't-send-mail property).
 
 ### Local models (the Siri-class experiment)
@@ -298,10 +298,10 @@ deterministic — a read tool must not quietly spend model calls.)
 - **Vs OpenClaw** (the obvious comparison, 247k stars): it reached the same
   interface first and validated demand — with a high-severity CVE (Jan
   2026), rampant prompt injection in the wild, malicious-skill supply chain,
-  and permission gates still on its roadmap. Honeycrisp's pitch in one line:
+  and permission gates still on its roadmap. Cortland's pitch in one line:
   what OpenClaw promises to bolt on someday is what this suite was born as.
 
-29. iMessage bridge M0 BUILT 2026-08-01 (docs/06): @honeycrisp/imessage —
+29. iMessage bridge M0 BUILT 2026-08-01 (docs/06): @cortland/imessage —
     chat.db reader (owner allowlist at the SQL boundary, Ventura
     attributedBody decoder, undecodable rows dropped), owner-only sender with
     the law-4 rate cap, reply-to-approve channel (framework-verified nonce the
@@ -317,7 +317,7 @@ deterministic — a read tool must not quietly spend model calls.)
 ## DISCOVERABILITY (how people find this)
 
 - 2026-08-01 — **Listed in the official MCP Registry**: io.github.
-  honeycrisp-suite/mail and /context, verified against the npm packages via
+  cortland-suite/mail and /context, verified against the npm packages via
   their mcpName fields. Publishing gotchas for next time, hard-won: (a)
   server.json descriptions max 100 chars; (b) `mcp-publisher login github`
   (device flow) CANNOT grant org namespaces — known bug since registry
@@ -352,10 +352,32 @@ deterministic — a read tool must not quietly spend model calls.)
 
 ## DECISIONS
 
+- 2026-08-07 — **RENAMED Cortland (was Honeycrisp).** A `gh search repos
+  honeycrisp` — one command, five seconds — returns eight projects with the
+  name, including a 33-star Swift deep-learning framework for Apple Silicon,
+  an Apple-1 emulator, a miniGPT on Apple's MLX, and (the direct hit)
+  christianpatrick/honeycrisp, created 2026-06-11: "a fast, private, and
+  transparent MCP server for your Apple apps" — same name, same niche, same
+  six Apple apps, seven weeks earlier.
+  **Process failure, recorded so it is not repeated:** the 2026-07-31
+  clearance searched USPTO (trademarks), npm (packages), and the web — never
+  GitHub repositories, which is where open-source names actually live. The
+  web query also carried `-apple` to filter fruit noise, excluding the one
+  word that would have surfaced an Apple-focused MCP server. Three searches
+  that each felt thorough; none covered the obvious surface.
+  **The rule from now on:** clearing a name means, at minimum, `gh search
+  repos <name>`, `gh search repos "<name> <domain-word>"`, npm, the MCP
+  registry, and a web search WITHOUT domain exclusions. Trademark search is
+  the last step, not the first.
+  Cortland was cleared that way: 6 same-name repos, none in AI/MCP/Apple
+  tooling; zero results for cortland+mcp, +apple, +assistant; the bare npm
+  name is FREE (honeycrisp's never was); npm scope empty; MCP registry
+  empty. Rename cost was near zero because 0.2.0 had not published yet.
+
 - 2026-08-01 — **PUBLISHED.** All five packages public on npm under
-  @honeycrisp (governed 0.1.0+0.1.1; mail/folders/context/setup 0.1.0), repo
-  public at github.com/honeycrisp-suite/honeycrisp, org profile README up.
-  Cold `npx @honeycrisp/setup` verified working from the registry. Publishing
+  @cortland (governed 0.1.0+0.1.1; mail/folders/context/setup 0.1.0), repo
+  public at github.com/cortland-suite/cortland, org profile README up.
+  Cold `npx @cortland/setup` verified working from the registry. Publishing
   lessons for next time: (a) npm quarantines new packages for a while before
   they're publicly visible — a 404 right after publish is NORMAL, wait before
   re-diagnosing; (b) a published version number is burned forever, even while
@@ -367,24 +389,24 @@ deterministic — a read tool must not quietly spend model calls.)
   belong in the user's terminal, not the agent's shell.
 - 2026-07-31 — **Trademark knockout search DONE (USPTO, live via tmsearch).
   No software conflict found; publish gate cleared from our side.** Exact
-  wordmark "honeycrisp": 13 US filings, every one in apples/apple trees (31),
+  wordmark "cortland": 13 US filings, every one in apples/apple trees (31),
   cider/alcohol (33), one dead perfume (3/4), one dead marketing mark (35) —
   ZERO in classes 9/42 (software), and the bare word itself is dead twice
   (U Minnesota 1991, Rainier 2013 — the failed-to-trademark story holds).
   Fuzzy "honey crisp": 7k+ loose matches, top relevance all food/beverage,
-  nothing software. One common-law datapoint to know about: **Honeycrisp
+  nothing software. One common-law datapoint to know about: **Cortland
   Technologies, Inc.**, an active consumer app developer (nutrition apps,
   iOS/Android, since ~2019) with NO federal filing in the search — different
   goods (consumer health apps vs developer tooling), different branding
   (their product is "Aspire"), coexistence is the norm at this distance, but
   it's the one name to remember if expansion ever heads toward consumer
-  apps. honeycrisp.com is held by a marketing firm — irrelevant to scoped
+  apps. cortland.com is held by a marketing firm — irrelevant to scoped
   npm. Caveats recorded honestly: knockout search by a non-lawyer, US only
   (EUIPO unchecked), and common-law scan limited to the obvious surfaces.
   Remaining publish steps are purely mechanical: npm login, GitHub remote +
   repository fields, publish --access public.
-- 2026-07-30 — **@honeycrisp npm org CLAIMED** (free plan, unlimited public
-  packages). The scope is ours; nobody else can publish under @honeycrisp/*.
+- 2026-07-30 — **@cortland npm org CLAIMED** (free plan, unlimited public
+  packages). The scope is ours; nobody else can publish under @cortland/*.
   Publishing itself still waits on the trademark search below and CLI login
   (`npm login`) on the dev machine.
 - 2026-07-30 (overnight session) — **npm packaging prepped, publish-ready
@@ -400,10 +422,10 @@ deterministic — a read tool must not quietly spend model calls.)
   exists — no remote yet, refused to guess a URL, (d) decide the published
   install story for setup's MCP registration (absolute node paths are right
   for the monorepo; a published setup should probably register `npx -y
-  @honeycrisp/mail` style commands instead).
-- 2026-07-30 — **The name is Honeycrisp.** An actual common apple variety —
+  @cortland/mail` style commands instead).
+- 2026-07-30 — **The name is Cortland.** An actual common apple variety —
   tangentially Apple, legally not. Bare npm name is squatted, so packages ship
-  scoped: @honeycrisp/governed, /mail, /folders, /context, /setup (zero packages
+  scoped: @cortland/governed, /mail, /folders, /context, /setup (zero packages
   existed under the scope at decision time). The word reads as two software
   virtues (sweet to use, crisp to run) and is effectively generic for the fruit
   (U. Minnesota famously failed to trademark it — hence SweeTango et al.);

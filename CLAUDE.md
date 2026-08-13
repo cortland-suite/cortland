@@ -1,4 +1,4 @@
-# Honeycrisp — Project Instructions
+# Cortland — Project Instructions
 
 Governed AI tooling for the Apple ecosystem. The framework contract (docs/01) is
 SETTLED and implemented: `packages/governed` is the contract as code, with the test
@@ -42,8 +42,8 @@ Three stacked products, built in order (full reasoning in README):
   No personal data, no employer/client references, no real email addresses in examples.
 - **Prior art to honor:** iwork_mcp (113 tools for Numbers/Pages/Keynote) — match its
   tool-naming and packaging conventions where sensible.
-- **Naming:** the suite is **Honeycrisp** (decided 2026-07-30, see NOTES).
-  Packages ship scoped: @honeycrisp/governed, /mail, /folders, /context,
+- **Naming:** the suite is **Cortland** (decided 2026-07-30, see NOTES).
+  Packages ship scoped: @cortland/governed, /mail, /folders, /context,
   /setup, /remote. All published to npm (2026-08-01); mail and context also
   carry `mcpName` + `server.json` for the official MCP Registry.
 

@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
-import type { AuditStore } from "@honeycrisp/governed";
-import { runJxa } from "@honeycrisp/governed";
+import type { AuditStore } from "@cortland/governed";
+import { runJxa } from "@cortland/governed";
 import type { ContextStore } from "./store.js";
 
 /**
@@ -140,7 +140,7 @@ export async function captureCalendar(
   if (config.calendars.length === 0) {
     deps.log(
       "calendar capture skipped: no allowlist. Add {\"calendars\": [\"Work\", ...]} " +
-        `to ${path.join(dataDir, "context.json")} (names via: honeycrisp-context calendars)`
+        `to ${path.join(dataDir, "context.json")} (names via: cortland-context calendars)`
     );
     return { skipped: true, reason: "no-allowlist", calendars: 0, events: 0 };
   }

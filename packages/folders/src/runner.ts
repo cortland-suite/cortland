@@ -1,7 +1,7 @@
 import { spawn } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
-import type { AuditStore } from "@honeycrisp/governed";
+import type { AuditStore } from "@cortland/governed";
 import {
   substitutePlaceholders,
   type PipelineConfig,
@@ -36,7 +36,7 @@ export async function runPipeline(
   deps: RunnerDeps
 ): Promise<RunOutcome> {
   const inputName = describeInput(inputPath);
-  const provenance = `created by honeycrisp-folders v${deps.version}, pipeline "${cfg.name}"`;
+  const provenance = `created by cortland-folders v${deps.version}, pipeline "${cfg.name}"`;
   const auditBase = {
     tool: `pipeline_${cfg.name}`,
     scope: dir,

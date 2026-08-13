@@ -1,4 +1,4 @@
-# honeycrisp-calendar
+# cortland-calendar
 
 Apple Calendar over MCP, built on the [governed framework](../governed/). This
 package adds the missing WRITE capability (create, delete) plus the minimal

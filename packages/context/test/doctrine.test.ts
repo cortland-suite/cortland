@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { AuditStore } from "@honeycrisp/governed";
+import { AuditStore } from "@cortland/governed";
 import { ContextStore } from "../src/store.js";
 import { makeContextTools } from "../src/tools.js";
 

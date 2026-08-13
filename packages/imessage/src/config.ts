@@ -43,12 +43,12 @@ export const DEFAULT_CHAT_DB = path.join(
 export function loadBridgeConfig(dataDir: string): BridgeConfig {
   const file = path.join(dataDir, "config.json");
   if (!fs.existsSync(file)) {
-    throw new Error(`no config at ${file} — run: honeycrisp-imessage setup --owner <handle>`);
+    throw new Error(`no config at ${file} — run: cortland-imessage setup --owner <handle>`);
   }
   const parsed: unknown = JSON.parse(fs.readFileSync(file, "utf8"));
   const block = (parsed as { imessage?: unknown })?.imessage;
   if (typeof block !== "object" || block === null) {
-    throw new Error(`config.json has no "imessage" block — run: honeycrisp-imessage setup --owner <handle>`);
+    throw new Error(`config.json has no "imessage" block — run: cortland-imessage setup --owner <handle>`);
   }
   const b = block as Record<string, unknown>;
   const handles = Array.isArray(b.ownerHandles)

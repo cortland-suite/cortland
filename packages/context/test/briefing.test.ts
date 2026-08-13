@@ -69,7 +69,7 @@ describe("calendar config + script", () => {
 
   it("sweep respects the daily cadence unless forced", async () => {
     const { captureCalendar } = await import("../src/calendar.js");
-    const { AuditStore } = await import("@honeycrisp/governed");
+    const { AuditStore } = await import("@cortland/governed");
     const dir = tmp();
     const store = new ContextStore(dir);
     store.setCursor("calendar:last_sweep", new Date().toISOString());

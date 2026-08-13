@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { defineTool, type AuditStore } from "@honeycrisp/governed";
+import { defineTool, type AuditStore } from "@cortland/governed";
 import { generateBriefing } from "./briefing.js";
 import { captureOnce } from "./capture.js";
 import type { ContextStore } from "./store.js";
@@ -7,7 +7,7 @@ import type { ContextStore } from "./store.js";
 /**
  * The serve layer, M1. Scope is "ContextStore", NOT "Mail": these tools read
  * the derived store only. Every answer cites messageIds — the pointers — and
- * consumers with Mail access fetch content through honeycrisp-mail. No Mail
+ * consumers with Mail access fetch content through cortland-mail. No Mail
  * permission, no content: the serve layer inherits source permissions by
  * construction.
  */
@@ -17,7 +17,7 @@ export function makeContextTools(store: ContextStore, audit: AuditStore, version
     description:
       "What changed since a point in time: new mail volume, senders, newly seen " +
       "people, active subjects. Deterministic, from the local context store. " +
-      "Citations are Message-IDs — fetch content via honeycrisp-mail if permitted.",
+      "Citations are Message-IDs — fetch content via cortland-mail if permitted.",
     scope: "ContextStore",
     mode: "read",
     undo: "none",

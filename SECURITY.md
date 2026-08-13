@@ -1,6 +1,6 @@
 # Security Policy
 
-Honeycrisp runs on your own Mac with Full Disk Access and Automation rights and
+Cortland runs on your own Mac with Full Disk Access and Automation rights and
 drives your real mail, calendar, notes, and messages. The code is the trust
 boundary — there is no App Store review or OS sandbox behind it. Security
 reports are taken seriously.

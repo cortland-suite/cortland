@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * honeycrisp-remote — the gateway CLI.
+ * cortland-remote — the gateway CLI.
  *
  *   serve                      run the gateway in the foreground (loopback only)
  *   on | off | status          install/remove/inspect the launchd agent
@@ -17,17 +17,17 @@ import os from "node:os";
 import path from "node:path";
 import { execFile } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { assertCleanArgv, defaultDataDir } from "@honeycrisp/governed";
+import { assertCleanArgv, defaultDataDir } from "@cortland/governed";
 import { startGateway } from "./gateway.js";
 import { resolveMounts } from "./mounts.js";
 import { TokenStore } from "./tokens.js";
 
 const VERSION = "0.1.0";
-const LABEL = "com.honeycrisp.remote";
+const LABEL = "com.cortland.remote";
 const DEFAULT_PORT = 7811;
 
 assertCleanArgv(process.argv);
-const dataDir = defaultDataDir("honeycrisp");
+const dataDir = defaultDataDir("cortland");
 const [, , command, sub, ...rest] = process.argv;
 
 /** remote.port from the suite config.json. A malformed config REFUSES to
@@ -67,7 +67,7 @@ if (command === "serve") {
   if (tokens.list().length === 0) {
     console.error(
       "warning: no tokens minted — every request will be refused.\n" +
-        "Mint one: honeycrisp-remote token mint --label my-laptop"
+        "Mint one: cortland-remote token mint --label my-laptop"
     );
   }
   await startGateway({ dataDir, port, mounts, log: (m) => console.error(m) });
@@ -84,7 +84,7 @@ if (command === "serve") {
     console.log(
       "This is the only time this token is shown. Store it in the client that\n" +
         "will use it; this Mac keeps only a hash. Revoke anytime:\n" +
-        `  honeycrisp-remote token revoke ${record.id}`
+        `  cortland-remote token revoke ${record.id}`
     );
   } else if (sub === "list") {
     const all = tokens.list();
@@ -95,12 +95,12 @@ if (command === "serve") {
   } else if (sub === "revoke") {
     const id = rest[0];
     if (!id) {
-      console.error("usage: honeycrisp-remote token revoke <id>");
+      console.error("usage: cortland-remote token revoke <id>");
       process.exit(2);
     }
     console.log(tokens.revoke(id) ? `revoked ${id}` : `no token with id ${id}`);
   } else {
-    console.error("usage: honeycrisp-remote token [mint|list|revoke]");
+    console.error("usage: cortland-remote token [mint|list|revoke]");
     process.exit(2);
   }
 } else if (command === "on") {
@@ -139,9 +139,9 @@ if (command === "serve") {
   const tokens = new TokenStore(dataDir).list();
   console.log(`tokens: ${tokens.length} active`);
 } else {
-  console.log(`honeycrisp-remote v${VERSION}`);
+  console.log(`cortland-remote v${VERSION}`);
   console.log(
-    "usage: honeycrisp-remote [serve|on|off|status|token mint|token list|token revoke <id>]"
+    "usage: cortland-remote [serve|on|off|status|token mint|token list|token revoke <id>]"
   );
   process.exit(command ? 2 : 0);
 }

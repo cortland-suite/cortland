@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { AuditStore } from "@honeycrisp/governed";
+import { AuditStore } from "@cortland/governed";
 import { parsePipelineYaml } from "../src/config.js";
 import { runPipeline } from "../src/runner.js";
 import {
@@ -35,7 +35,7 @@ steps:
     expect(outcome.ok).toBe(true);
     const result = fs.readFileSync(resultPath(input), "utf8");
     expect(result).toContain("HELLO FOLDER PIPELINES");
-    expect(result).toContain('created by honeycrisp-folders v0.0.0-test, pipeline "upper"');
+    expect(result).toContain('created by cortland-folders v0.0.0-test, pipeline "upper"');
     const row = audit.list()[0];
     expect(row.tool).toBe("pipeline_upper");
     expect(row.outcome).toBe("ok");

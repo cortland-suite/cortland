@@ -5,7 +5,7 @@
 <plist version="1.0">
 <dict>
   <key>Label</key>
-  <string>com.honeycrisp.context-brief</string>
+  <string>com.cortland.context-brief</string>
   <key>ProgramArguments</key>
   <array>
     <string>REPLACE_NODE_PATH</string>
@@ -21,8 +21,8 @@
     <integer>0</integer>
   </dict>
   <key>StandardOutPath</key>
-  <string>/tmp/honeycrisp-context-brief.log</string>
+  <string>/tmp/cortland-context-brief.log</string>
   <key>StandardErrorPath</key>
-  <string>/tmp/honeycrisp-context-brief.err</string>
+  <string>/tmp/cortland-context-brief.err</string>
 </dict>
 </plist>
