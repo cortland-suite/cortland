@@ -12,6 +12,8 @@ What it offers (each step is a y/N question, defaulting to No):
 
 1. **MCP registration** — adds the mail and context servers to Claude Code
    (user scope) and Claude Desktop (with a backup of the previous config).
+   Reminders, notes, and calendar are separate packages; add them with
+   `claude mcp add` pointing at this repo's `dist` until `@cortland` is on npm.
 2. **Permission warm-up** — triggers the macOS Automation prompt for Mail on
    purpose, so the first real call doesn't die in a permission dialog; points
    at the Full Disk Access pane for the optional full-text search tier.

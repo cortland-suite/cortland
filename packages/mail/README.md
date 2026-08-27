@@ -1,15 +1,20 @@
 # cortland-mail
 
 Apple Mail over MCP, built on the [governed framework](../governed/). Reads are
-free, drafts are write-safe, mutations are gated behind a native macOS approval
-dialog — and **there is no send tool at all**.
+free, drafts are write-safe, send and other mutations are gated behind a native
+macOS approval (or the folder / elicitation channel) — **send is write-gated,
+not absent**.
 
-## The draft-first doctrine
+## The send doctrine
 
-The outward path is `mail_create_draft` → you open Mail.app → you hit send. The
-gate that was never built cannot be bypassed: this server is structurally unable
-to send email, and a test in `test/doctrine.test.ts` fails if a tool with "send"
-in its name ever appears. Worst case is a bad draft, not a bad send.
+`mail_create_draft` is write-safe (a draft stays in your review loop).
+`mail_send` is write-gated: live mode plus per-action human approval. Account
+and recipient are required; the body is redacted from the audit log. Undo is
+compensate (you cannot unsend; a follow-up is the correction).
+
+v1 deferred send until the approval queue existed. It does now (folder channel,
+elicitation, dialog). House doctrine in the project CLAUDE.md was always
+"send gated."
 
 ## Tools
 
@@ -21,6 +26,7 @@ in its name ever appears. Worst case is a bad draft, not a bad send.
 | `mail_read` | read | full message by Message-ID; body arrives inside the injection fence |
 | `mail_thread` | read | conversation by normalized subject across inbox + sent |
 | `mail_create_draft` | write-safe | new draft or reply (`replyToMessageId`); account required; provenance footer; body redacted from the audit log |
+| `mail_send` | write-gated | new outgoing message; account + to + subject required; provenance footer; body redacted; live + per-action approval |
 | `mail_mark` | write-gated | read/flagged status; native undo (previous state captured before the write) |
 | `mail_move` | write-gated | move between mailboxes; native undo (source mailbox captured first) |
 

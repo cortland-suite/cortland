@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="380" viewBox="0 0 720 380" role="img" aria-label="Illustrated Ollama setup: install with Homebrew, start the service, pull Gemma 4 E2B, confirm the local API.">
+  <style>
+    .bg { fill: #ffffff; }
+    .frame { fill: none; stroke: #d8d8dc; stroke-width: 1; }
+    .bar { fill: #f6f6f6; }
+    .h { font: 600 15px -apple-system, "SF Pro Text", Helvetica, Arial, sans-serif; fill: #111; }
+    .s { font: 400 12px -apple-system, "SF Pro Text", Helvetica, Arial, sans-serif; fill: #8a8a8e; }
+    .p { font: 400 13px -apple-system, "SF Pro Text", Helvetica, Arial, sans-serif; fill: #3a3a3c; }
+    .k { font: 500 12px ui-monospace, "SF Mono", Menlo, monospace; fill: #e6e6e6; }
+    .term { fill: #1d1d1f; }
+    .ok { fill: #32d74b; }
+  </style>
+  <rect class="bg" width="720" height="380" rx="14"/>
+  <rect class="frame" x="0.5" y="0.5" width="719" height="379" rx="14"/>
+
+  <rect class="bar" x="1" y="1" width="718" height="48" rx="14"/>
+  <rect class="bar" x="1" y="30" width="718" height="20"/>
+  <text class="h" x="20" y="32">Ollama · the iMessage bridges brain (today)</text>
+
+  <rect class="term" x="16" y="64" width="688" height="200" rx="10"/>
+  <circle class="ok" cx="40" cy="88" r="5"/>
+  <circle cx="58" cy="88" r="5" fill="#ffd60a"/>
+  <circle cx="76" cy="88" r="5" fill="#ff453a"/>
+  <text class="k" x="36" y="124">brew install ollama</text>
+  <text class="k" x="36" y="148">brew services start ollama</text>
+  <text class="k" x="36" y="172">ollama pull gemma4:e2b-it-qat</text>
+  <text class="k" x="36" y="204">curl -s http://127.0.0.1:11434/api/tags | head</text>
+  <text class="k" x="36" y="236"># should list gemma4:e2b-it-qat</text>
+
+  <text class="p" x="20" y="292">4.3 GB. Fits an 8 GB Mac. Speaks tools natively  no arg-shim required.</text>
+  <text class="s" x="20" y="316">The bridge calls Ollamas /api/chat. Point imessage.model.host at that URL.</text>
+  <text class="s" x="20" y="334">Osaurus advertises an Ollama-compatible port (1337)  you can try that host.</text>
+  <text class="s" x="20" y="352">LM Studios local server is OpenAI-shaped; it is not the bridge brain yet.</text>
+</svg>

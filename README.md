@@ -15,6 +15,12 @@ Cortland: Added "Call vet" for tomorrow, Aug 3 at 2:00 PM.
 That conversation happened over iMessage, answered by a 4 GB model running on
 an 8 GB MacBook Air. Nothing left the Mac.
 
+The texting interface needs a **second Apple ID**, signed into Messages on the
+Mac only — a mouthpiece, not a worker. It owns no mail, no calendar, no data.
+You text it from your phone like any contact; the Mac still does the work as
+*you*. Your system iCloud stays yours. Claude Code, Cursor, Codex, and other
+MCP clients skip this step: they talk to the same tools over stdio.
+
 ---
 
 ## What it looks like in use
@@ -45,7 +51,7 @@ can't overclaim:
 You:       what can you do?
 Cortland: Here's what I can do with your Mac:
             • Calendar: list, look up, create, delete
-            • Mail: search, read, follow threads, draft (never send), flag, file
+            • Mail: search, read, follow threads, draft, send (asks first), flag, file
             • Notes: search, read, create, add to
             • Reminders: list, search, create, tick off, delete
 
@@ -55,12 +61,70 @@ Cortland: Here's what I can do with your Mac:
 
 **In Claude Code or Claude Desktop**, the same tools are just there:
 
-> **You:** draft a reply to Ms. Alvarez saying the slip is coming Thursday
-> **Claude:** *[searches mail, reads the thread, creates a draft]* Drafted a
-> reply in your Personal account. It's in Mail's Drafts — I can't send it;
-> sending is yours.
+> **You:** send a reply to Ms. Alvarez saying the slip is coming Thursday
+> **Claude:** *[searches mail, reads the thread]* I can send this from your
+> Personal account to alex@example.com. Approve in the usual channel.
 
-There is no send-email tool. Not gated — **absent**.
+`mail_send` is write-gated. Live mode plus per-action human approval. A stolen
+token can only *ask*.
+
+---
+
+## Requirements
+
+macOS only. Nothing here runs on Windows or Linux — the tools talk to Apple
+apps via Automation.
+
+| | Minimum | Comfortable |
+|---|---|---|
+| **OS** | macOS 13 Ventura | macOS 15+ |
+| **Mac** | Any Mac that runs Ventura (Intel can drive Cursor/Claude) | Apple Silicon (M1 or newer) |
+| **Node** | 20 LTS (`node -v`) | 22 |
+| **Toolchain** | Xcode Command Line Tools (`xcode-select -p`) | same — `better-sqlite3` compiles native code |
+| **Client** | One MCP app: Cursor, Claude Code, Claude Desktop, Codex, or LM Studio | plus Ollama if you want to **text** it |
+| **RAM** | 8 GB (cloud/Cursor model, or Gemma 4 E2B) | 16 GB+ for larger local models |
+| **Disk** | ~500 MB for this repo’s build | **+6 GB** if you pull `gemma4:e2b-it-qat` |
+| **Apple apps** | The apps you want touched, signed in as you | Mail + Reminders is the usual first pair |
+
+**iMessage bridge only:** macOS 13+ (modern `chat.db`), Full Disk Access for
+the process that runs Node, Automation → Messages, and a **second Apple ID**
+signed into Messages.app — not into System Settings. See
+[SETUP.md §5.1](SETUP.md#51-create-the-assistants-apple-id).
+
+**Osaurus as a client:** Apple Silicon, macOS 15.5+.
+
+Not required: an npm `@cortland` install (0.2.0 is GitHub-only for now), a
+developer account, iCloud for Path A, or any API key.
+
+---
+
+## Quick start
+
+**Fastest path to “it searched my mail”** — Cursor (or Claude Code) as the
+brain, no second Apple ID, no Ollama:
+
+```bash
+xcode-select --install          # if `xcode-select -p` fails
+git clone https://github.com/cortland-suite/cortland.git
+cd cortland
+npm install && npm run build    # first install compiles sqlite — a minute
+```
+
+Then Cursor Settings → MCP, add servers pointing `node` at
+`packages/mail/dist/server.js` (and reminders/notes/calendar if you want
+them). Absolute paths. JSON is in
+**[docs/08_local_models.md](docs/08_local_models.md#cursor)**.
+
+Ask: *search my mail for anything from school this week.* macOS will prompt
+**Automation** (Cursor → Mail). Allow it.
+
+Writes stay previews until you set `"live": true` in
+`~/Library/Application Support/cortland/config.json`. Even then, send/delete
+asks you per action.
+
+**Texting it from your phone** is a longer path (second Apple ID + Ollama).
+[SETUP.md](SETUP.md) is the ordered list; [docs/08](docs/08_local_models.md)
+is the illustrated one.
 
 ---
 
@@ -89,22 +153,27 @@ each guarantee can't be bypassed — and every tool in the suite is built on it.
 | **Everything is audited** | Success, failure, dry-run, denial, refusal: one local SQLite row each. "What did my tools actually do?" always has an answer. |
 | **Undo is enforced at registration** | A tool claiming native undo must produce a recipe *before* the write, or the framework refuses it. |
 | **Content is data, not instructions** | Everything read from mail, notes, or messages returns inside a nonce-delimited fence. |
-| **Safety by absence** | No send-email tool. No attendee invitations. No reading conversations other than your own. |
+| **Safety by absence** | No ungated send. No attendee invitations. No reading conversations other than your own. |
 | **Local-first** | No accounts, no credentials, no cloud. Your model, your machine, your disk. |
 
 ---
 
 ## Install
 
+`@cortland` 0.2.0 is not on npm yet. From the repo:
+
 ```bash
-npm install -g @cortland/setup @cortland/mail @cortland/reminders \
-  @cortland/notes @cortland/calendar @cortland/context
-cortland setup
+git clone https://github.com/cortland-suite/cortland.git
+cd cortland
+npm install
+npm run build
+npx cortland setup
 ```
 
 The wizard asks before every step and records what it did. Full walkthrough —
 including the iMessage bridge, permissions, and model choice — in
-**[SETUP.md](SETUP.md)**.
+**[SETUP.md](SETUP.md)**. Connecting Cursor, Codex, LM Studio, Osaurus, or
+Ollama: **[docs/08_local_models.md](docs/08_local_models.md)**.
 
 ---
 
@@ -112,28 +181,41 @@ including the iMessage bridge, permissions, and model choice — in
 
 | Package | What it does |
 |---|---|
-| [`@cortland/governed`](https://www.npmjs.com/package/@cortland/governed) | The framework: dry-run defaults, approval gates, audit, provenance, undo, injection fencing. Build your own governed tools on it. |
-| [`@cortland/mail`](https://www.npmjs.com/package/@cortland/mail) | Apple Mail: read, search (two tiers), threads, drafts. Draft-first — no send tool exists. |
-| [`@cortland/reminders`](https://www.npmjs.com/package/@cortland/reminders) | Reminders: lists, search, create, complete, delete — with native undo. |
-| [`@cortland/notes`](https://www.npmjs.com/package/@cortland/notes) | Notes: folders, search, read, create, append. |
-| [`@cortland/calendar`](https://www.npmjs.com/package/@cortland/calendar) | Calendar: window queries, create, delete. Cannot send invitations, by design. |
-| [`@cortland/context`](https://www.npmjs.com/package/@cortland/context) | Local context layer: mail/calendar *metadata* (pointers, never bodies), briefings, person lookups, a corrections flywheel. |
-| [`@cortland/imessage`](https://www.npmjs.com/package/@cortland/imessage) | Text your own AI. Owner-only by construction, approvals by reply. |
-| [`@cortland/folders`](https://www.npmjs.com/package/@cortland/folders) | Folder-as-API: drop a file in iCloud from any device, a declared local pipeline runs. |
-| [`@cortland/remote`](https://www.npmjs.com/package/@cortland/remote) | Reach the suite from your other devices over your own private network. |
-| [`@cortland/setup`](https://www.npmjs.com/package/@cortland/setup) | The onboarding wizard. |
+| [`@cortland/governed`](packages/governed) | The framework: dry-run defaults, approval gates, audit, provenance, undo, injection fencing. Build your own governed tools on it. |
+| [`@cortland/mail`](packages/mail) | Apple Mail: read, search (two tiers), threads, drafts, send (write-gated). |
+| [`@cortland/reminders`](packages/reminders) | Reminders: lists, search, create, complete, delete — with native undo. |
+| [`@cortland/notes`](packages/notes) | Notes: folders, search, read, create, append. |
+| [`@cortland/calendar`](packages/calendar) | Calendar: window queries, create, delete. Cannot send invitations, by design. |
+| [`@cortland/context`](packages/context) | Local context layer: mail/calendar *metadata* (pointers, never bodies), briefings, person lookups, a corrections flywheel. |
+| [`@cortland/imessage`](packages/imessage) | Text your own AI. Second Apple ID in Messages (mouthpiece only); owner-only by construction, approvals by reply. |
+| [`@cortland/folders`](packages/folders) | Folder-as-API: drop a file in iCloud from any device, a declared local pipeline runs. |
+| [`@cortland/remote`](packages/remote) | Reach the suite from your other devices over your own private network. |
+| [`@cortland/setup`](packages/setup) | The onboarding wizard. |
 
 ---
 
 ## Bring your own model
 
-The servers speak MCP, so any MCP client works — Claude Code, Claude Desktop,
-LM Studio, or the iMessage bridge driving a local model through Ollama.
+Cortland is the tools. You pick the brain.
 
-Field-tested on an 8 GB M2: `gemma4:e2b-it-qat` (4.3 GB) makes clean tool calls
-and refuses honestly. The governed contract matters *more* with a small model,
-not less — dry-run defaults and per-action gates are exactly the harness that
-makes a fallible local model safe to hand your inbox.
+<p align="center">
+  <img src="docs/images/two-paths.svg" alt="Path A: an MCP client hosts the model and Cortland is a plugin. Path B: you text an iMessage bridge; Ollama is the brain; the Mac still acts as you." width="860">
+</p>
+
+**Path A.** Cursor, Claude Code, Claude Desktop, Codex, LM Studio, or Osaurus
+hosts the model. Cortland is an MCP plugin. No second Apple ID.
+
+**Path B.** You text it. A second Apple ID signs into Messages on the Mac
+(mouthpiece only). Ollama runs Gemma 4 on disk. Approvals are `yes <code>`
+in the same thread.
+
+Field-tested on an 8 GB M2: `gemma4:e2b-it-qat` (4.3 GB) makes clean tool
+calls and refuses honestly. The governed contract matters *more* with a
+small model, not less.
+
+**Walkthroughs, including LM Studio and Osaurus from a clean install:**
+**[docs/08_local_models.md](docs/08_local_models.md)**. Clean-Mac order,
+permissions, and the iMessage second-ID steps: **[SETUP.md](SETUP.md)**.
 
 ---
 
@@ -153,10 +235,13 @@ makes a fallible local model safe to hand your inbox.
 ## Docs
 
 - **[SETUP.md](SETUP.md)** — clean Mac to working assistant, with the gotchas.
+- **[docs/08_local_models.md](docs/08_local_models.md)** — connect Cursor, Codex,
+  LM Studio, Osaurus, or Ollama; illustrated, from zero.
 - **[SECURITY.md](SECURITY.md)** — reporting, and what's in scope.
 - **`docs/`** — one design doc per component: the framework contract (01),
   Mail (02), folder-as-API (03), the context layer (04), remote access (05),
-  the iMessage bridge (06), and the threat model / review guide (07).
+  the iMessage bridge (06), the threat model / review guide (07), and local
+  models (08).
 - **`NOTES.md`** — the engineering log: decisions with dates, open questions,
   and every field finding, including the ones that were embarrassing.
 

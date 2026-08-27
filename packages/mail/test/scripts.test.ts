@@ -4,6 +4,7 @@ import {
   buildMoveScript,
   buildReadScript,
   buildSearchScript,
+  buildSendScript,
 } from "../src/scripts.js";
 
 /**
@@ -35,6 +36,25 @@ describe("script injection safety", () => {
         body: `line1\nline2 ${hostile}`,
       })
     );
+  });
+
+  it("send fields cannot escape their string literals", () => {
+    expectSafelyEmbedded(
+      buildSendScript({
+        account: "Personal",
+        to: [`a@example.com${hostile}`],
+        subject: hostile,
+        body: `line1\nline2 ${hostile}`,
+      })
+    );
+    const script = buildSendScript({
+      account: "Personal",
+      to: ["a@example.com"],
+      subject: "hi",
+      body: "hello",
+    });
+    expect(script).toContain("msg.send()");
+    expect(script).not.toContain("msg.save()");
   });
 
   it("reply message ids cannot escape", () => {

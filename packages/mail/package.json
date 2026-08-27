@@ -1,7 +1,7 @@
 {
   "name": "@cortland/mail",
   "version": "0.2.0",
-  "description": "Apple Mail over MCP, built on the governed framework: reads free, drafts write-safe, no send tool at all",
+  "description": "Apple Mail over MCP, built on the governed framework: reads free, drafts write-safe, send write-gated",
   "license": "MIT",
   "type": "module",
   "main": "dist/server.js",

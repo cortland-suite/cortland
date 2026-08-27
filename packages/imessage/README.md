@@ -70,3 +70,6 @@ the folder channel with the UX of texting back.
 Reads are free; writes stay dry-run until you enable live mode, and every
 action — handled, replied, ignored, approved, refused — is a row in the
 suite's audit DB.
+
+Illustrated walkthrough (second Apple ID, Ollama from zero, LM Studio /
+Osaurus as MCP hosts): [docs/08_local_models.md](../../docs/08_local_models.md).

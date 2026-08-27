@@ -341,7 +341,7 @@ for (const line of skipped) console.log(`  · skipped: ${line}`);
 console.log(
   "\nEvery action above was recorded in the audit DB " +
     "(~/Library/Application Support/cortland/audit.db).\n" +
-    "Remember the doctrine: reads are free, drafts can't send, writes are gated, " +
+    "Remember the doctrine: reads are free, send is gated, drafts stay in your review loop, " +
     "and live mode is off until you opt in.\n"
 );
 rl?.close();

@@ -326,12 +326,14 @@ deterministic — a read tool must not quietly spend model calls.)
   must be public and role must be Owner. Four device codes died teaching us
   this; (c) the org-namespace grant is computed at login, so every
   permission change needs a fresh login. Also live: GitHub topics on the
-  repo (mcp, apple-mail, ai-agents, local-first…), npm keywords on all six
-  packages, README leads with the npm install path. Still open: community
-  directory submissions (PulseMCP, mcp.so, awesome-mcp-servers PR) — most
-  aggregators crawl the official registry, so those should partly
-  self-populate; check in a week. Claude's curated connector directory
-  stays out of reach until M2's public rung.
+  repo (mcp, apple-mail, ai-agents, local-first…), npm keywords on the
+  packages. README install path is the GitHub clone until `@cortland` 0.2.0
+  publishes. After the 2026-08-26 org rename, registry namespaces are
+  `io.github.cortland-suite/*` — re-verify/re-publish when npm ships. Still
+  open: community directory submissions (PulseMCP, mcp.so, awesome-mcp-servers
+  PR) — most aggregators crawl the official registry, so those should partly
+  self-populate. Claude's curated connector directory stays out of reach
+  until M2's public rung.
 
 ## WATCH ITEMS (landscape)
 
@@ -352,6 +354,20 @@ deterministic — a read tool must not quietly spend model calls.)
 
 ## DECISIONS
 
+- 2026-08-26 — **Public repo flushed for first users.** README leads with
+  requirements (macOS 13, Node 20, Xcode CLT, 8 GB / +6 GB for Gemma 4 E2B)
+  and a Cursor quick start that does not need a second Apple ID. Illustrated
+  local-model guide is docs/08 (Cursor, Codex, LM Studio, Osaurus, Ollama).
+  `mail_send` is write-gated in tree. Install remains clone-from-GitHub;
+  `@cortland` 0.2.0 is not on npm. GitHub org+repo renamed and public earlier
+  the same day.
+- 2026-08-26 — **GitHub rename shipped, repo public.** Org
+  `honeycrisp-suite` → `cortland-suite`, repo `honeycrisp` → `cortland`.
+  `main` is https://github.com/cortland-suite/cortland (public). `@cortland`
+  0.2.0 is not on npm yet; install from the repo. The previous npm scope still
+  has 0.1.x packages under the old name. Org profile README updated the same
+  day. npm publish of `@cortland` remains a separate, human-gated step
+  (2FA in the operator's terminal).
 - 2026-08-07 — **RENAMED Cortland (was Honeycrisp).** A `gh search repos
   honeycrisp` — one command, five seconds — returns eight projects with the
   name, including a 33-star Swift deep-learning framework for Apple Silicon,
@@ -374,11 +390,11 @@ deterministic — a read tool must not quietly spend model calls.)
   name is FREE (honeycrisp's never was); npm scope empty; MCP registry
   empty. Rename cost was near zero because 0.2.0 had not published yet.
 
-- 2026-08-01 — **PUBLISHED.** All five packages public on npm under
-  @cortland (governed 0.1.0+0.1.1; mail/folders/context/setup 0.1.0), repo
-  public at github.com/cortland-suite/cortland, org profile README up.
-  Cold `npx @cortland/setup` verified working from the registry. Publishing
-  lessons for next time: (a) npm quarantines new packages for a while before
+- 2026-08-01 — **PUBLISHED** (under the previous package scope). Five
+  packages on npm at 0.1.x; publishing lessons recorded below. The 2026-08-13
+  rename to Cortland did not republish: as of 2026-08-26 `@cortland` 0.2.0 is
+  not on npm, and the GitHub repo is public at github.com/cortland-suite/cortland.
+  Publishing lessons for next time: (a) npm quarantines new packages for a while before
   they're publicly visible — a 404 right after publish is NORMAL, wait before
   re-diagnosing; (b) a published version number is burned forever, even while
   invisible (hence governed's 0.1.1); (c) the registry exposes the publishing
@@ -528,10 +544,14 @@ deterministic — a read tool must not quietly spend model calls.)
   doesn't know. The full contract — dry-run, undo recipes, provenance — exists only by
   construction. Proxy remains a legit v2-adjacent product with honestly-reduced
   guarantees ("audit + gates for any MCP").
+- 2026-08-21 — Mail `mail_send` shipped write-gated. v1 deferred send until the
+  approval queue existed (2026-07-29 Q8). Folder channel, elicitation, and dialog
+  all exist; house doctrine was always "send gated." Draft remains write-safe.
+  Undo on send is compensate (cannot unsend).
 - 2026-07-29 — (was Q8) Draft-first confirmed: Mail v1 ships with NO send tool. The
   outward path is create_draft → human opens Mail.app → human hits send. Worst case
   becomes embarrassment (bad draft), not damage — changes the risk class of the whole
-  server. Revisit only after the v2 approval queue exists.
+  server. Revisit only after the v2 approval queue exists. **Revisited 2026-08-21.**
 - 2026-07-29 — Stack: TypeScript + MCP SDK + osascript(JXA) + better-sqlite3, matching
   iwork_mcp. Public-ready hygiene from the first commit.
 - 2026-07-29 — Build order: framework → Mail → folder-as-API → context layer. No tool

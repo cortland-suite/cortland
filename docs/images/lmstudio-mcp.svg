@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="460" viewBox="0 0 720 460" role="img" aria-label="Illustrated LM Studio walkthrough: Program tab, Install, Edit mcp.json, paste Cortland servers, load a tool-capable model, chat.">
+  <style>
+    .bg { fill: #ffffff; }
+    .frame { fill: none; stroke: #d8d8dc; stroke-width: 1; }
+    .bar { fill: #f6f6f6; }
+    .h { font: 600 15px -apple-system, "SF Pro Text", Helvetica, Arial, sans-serif; fill: #111; }
+    .s { font: 400 12px -apple-system, "SF Pro Text", Helvetica, Arial, sans-serif; fill: #8a8a8e; }
+    .p { font: 400 13px -apple-system, "SF Pro Text", Helvetica, Arial, sans-serif; fill: #3a3a3c; }
+    .n { font: 600 11px -apple-system, "SF Pro Text", Arial, sans-serif; fill: #fff; }
+    .mono { font: 500 11px ui-monospace, "SF Mono", Menlo, monospace; fill: #111; }
+    .dim { font: 500 11px ui-monospace, "SF Mono", Menlo, monospace; fill: #8a8a8e; }
+    .sel { fill: #007aff; }
+    .row { fill: #ffffff; }
+    .row2 { fill: #eef5ff; }
+    .stroke { stroke: #d8d8dc; fill: #fff; }
+  </style>
+  <rect class="bg" width="720" height="460" rx="14"/>
+  <rect class="frame" x="0.5" y="0.5" width="719" height="459" rx="14"/>
+
+  <rect class="bar" x="1" y="1" width="718" height="48" rx="14"/>
+  <rect class="bar" x="1" y="30" width="718" height="20"/>
+  <text class="h" x="20" y="32">LM Studio · add Cortland as tools</text>
+
+  <!-- sidebar -->
+  <rect x="16" y="64" width="150" height="380" rx="10" class="stroke"/>
+  <text class="s" x="28" y="88">Chat</text>
+  <text class="s" x="28" y="112">Discover</text>
+  <rect x="24" y="124" width="134" height="28" rx="6" class="sel"/>
+  <text class="n" x="36" y="143">Program</text>
+  <text class="s" x="28" y="176">Developer</text>
+  <text class="s" x="28" y="200">Settings</text>
+
+  <!-- main -->
+  <rect x="180" y="64" width="524" height="160" rx="10" class="stroke"/>
+  <text class="p" x="196" y="90">1. Right sidebar ’ Program</text>
+  <text class="p" x="196" y="112">2. Install ’ Edit mcp.json</text>
+  <text class="p" x="196" y="134">3. Paste the Cortland servers (stdio, local)</text>
+  <text class="p" x="196" y="156">4. Save. LM Studio spawns each server.</text>
+  <text class="s" x="196" y="186">Need LM Studio 0.3.17+ (MCP host). Load a tool-capable model in Chat before you ask.</text>
+  <text class="s" x="196" y="204">Tiny models drown in ~2,400 tokens of tool schema. Prefer Gemma 4 class.</text>
+
+  <rect x="180" y="236" width="524" height="208" rx="10" fill="#f6f6f6"/>
+  <text class="s" x="196" y="260">mcp.json · excerpt</text>
+  <text class="dim" x="196" y="284">"mcpServers": {</text>
+  <text class="mono" x="216" y="304">"cortland-mail": {</text>
+  <text class="mono" x="236" y="324">"command": "node",</text>
+  <text class="mono" x="236" y="344">"args": ["&/packages/mail/dist/server.js"]</text>
+  <text class="mono" x="216" y="364">},</text>
+  <text class="mono" x="216" y="384">"cortland-reminders": { & },</text>
+  <text class="mono" x="216" y="404">"cortland-notes": { & }</text>
+  <text class="dim" x="196" y="424">}</text>
+</svg>

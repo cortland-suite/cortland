@@ -217,6 +217,37 @@ JSON.stringify({ saved: true, reply: false, sender: senderAddress, subject: ${JS
 `;
 }
 
+export function buildSendScript(p: DraftParams): string {
+  if (!p.to || p.to.length === 0) {
+    throw new Error("buildSendScript requires to");
+  }
+  if (!p.subject) {
+    throw new Error("buildSendScript requires subject");
+  }
+  const accountCheck = `
+const matches = Mail.accounts.whose({ name: ${JSON.stringify(p.account)} })();
+if (matches.length === 0) throw new Error("No account named: " + ${JSON.stringify(p.account)});
+const senderAddress = matches[0].emailAddresses()[0];
+if (!senderAddress) {
+  throw new Error("Account " + ${JSON.stringify(p.account)} + " exposes no email addresses to scripting (common for iCloud accounts) — send from a different account, or add the address in Mail's account settings.");
+}`;
+  const recipients = `
+${JSON.stringify(p.to ?? [])}.forEach(a => msg.toRecipients.push(Mail.ToRecipient({ address: a })));
+${JSON.stringify(p.cc ?? [])}.forEach(a => msg.ccRecipients.push(Mail.CcRecipient({ address: a })));
+${JSON.stringify(p.bcc ?? [])}.forEach(a => msg.bccRecipients.push(Mail.BccRecipient({ address: a })));`;
+  return `${PRELUDE}${accountCheck}
+const msg = Mail.OutgoingMessage({
+  subject: ${JSON.stringify(p.subject)},
+  content: ${JSON.stringify(p.body)},
+  visible: false,
+  sender: senderAddress
+});
+Mail.outgoingMessages.push(msg);${recipients}
+msg.send();
+JSON.stringify({ sent: true, sender: senderAddress, subject: ${JSON.stringify(p.subject)} });
+`;
+}
+
 export function buildGetFlagsScript(p: LocateParams): string {
   return `${PRELUDE}
 const found = findMessage(${JSON.stringify(p.messageId)}, ${JSON.stringify(p.account ?? null)}, ${JSON.stringify(p.mailbox ?? null)});

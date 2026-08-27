@@ -7,7 +7,7 @@ open questions. Design docs live in `docs/`, one per product tier.
 
 ## What this project is
 
-Three stacked products, built in order (full reasoning in README):
+Stacked products, built in order (full reasoning in README):
 
 1. **The governed-MCP framework** — every tool ships with dry-run defaults, human-gated
    writes, audit logging, provenance, undo. The differentiator vs. existing raw
@@ -16,8 +16,11 @@ Three stacked products, built in order (full reasoning in README):
    read/search/draft free, send gated. (docs/02)
 3. **Folder-as-API** — watched iCloud folders trigger local pipelines from any Apple
    device. (docs/03)
-4. **The context layer** — the long-game: local-first daemon that captures and curates
-   personal context, served over MCP. (docs/04)
+4. **The context layer** — local-first daemon that captures and curates personal
+   context, served over MCP. (docs/04)
+
+App coverage since: Reminders, Notes, Calendar; plus remote access (docs/05)
+and the iMessage bridge (docs/06).
 
 ## House doctrine (applies to every tool, non-negotiable)
 
@@ -38,14 +41,15 @@ Three stacked products, built in order (full reasoning in README):
 - **Language:** TypeScript + MCP SDK (same stack as iwork_mcp — proven, one-line
   install via npx). AppleScript/JXA via `osascript` child processes. SQLite via
   better-sqlite3 for audit/state.
-- **Repo hygiene:** built to be PUBLIC eventually — write every file as if it ships.
+- **Repo hygiene:** the repo is public at github.com/cortland-suite/cortland.
   No personal data, no employer/client references, no real email addresses in examples.
 - **Prior art to honor:** iwork_mcp (113 tools for Numbers/Pages/Keynote) — match its
   tool-naming and packaging conventions where sensible.
 - **Naming:** the suite is **Cortland** (decided 2026-07-30, see NOTES).
-  Packages ship scoped: @cortland/governed, /mail, /folders, /context,
-  /setup, /remote. All published to npm (2026-08-01); mail and context also
-  carry `mcpName` + `server.json` for the official MCP Registry.
+  Packages ship scoped: @cortland/governed, /mail, /reminders, /notes, /calendar,
+  /folders, /context, /imessage, /setup, /remote. `@cortland` 0.2.0 is not on
+  npm yet (install from the repo). Mail, reminders, notes, calendar, context,
+  and imessage carry `mcpName` + `server.json` for the official MCP Registry.
 
 ## How to work a session here
 

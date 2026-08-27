@@ -1,8 +1,8 @@
 # cortland-context
 
-The context layer, milestone 1. A local store of **derived metadata and
-pointers** over Apple Mail — never copies. See `docs/04_context_layer.md` for
-the full design.
+The context layer (M1–M4 built). A local store of **derived metadata and
+pointers** over Apple Mail and Calendar — never copies. See
+`docs/04_context_layer.md` for the full design.
 
 ## Pointers, not copies
 
@@ -16,7 +16,7 @@ the serve layer itself needs no Mail access at all.
 ```
 cortland-context capture   # one incremental sweep (headers only, ~seconds)
 cortland-context serve     # MCP server: context_changes, context_person,
-                           # context_capture_now
+                           # context_capture_now, context_brief
 ```
 
 - `context_changes` — what's new since a point in time: volume, senders, newly
@@ -25,6 +25,8 @@ cortland-context serve     # MCP server: context_changes, context_person,
   message pointers.
 - `context_capture_now` — on-demand sweep (write-safe: it writes only the
   local store).
+- `context_brief` — deterministic briefing from the store (a read; it does
+  not spend model calls). The CLI `brief <dir>` is the Layer-1 pipeline.
 
 Capture keeps per-mailbox cursors, backfills 90 days on first run, and audits
 every sweep (counts only) to the suite's shared audit DB. Schedule it with

@@ -17,6 +17,8 @@ Apple Reminders over MCP, governed. Five tools, three trust tiers:
 Every action lands in the suite's shared audit DB. First use triggers the
 macOS Automation prompt (your MCP host → Reminders).
 
+Until `@cortland` is on npm, point Claude at this repo's build:
+
 ```
-claude mcp add --scope user cortland-reminders npx -- -y @cortland/reminders
+claude mcp add --scope user cortland-reminders -- node ./packages/reminders/dist/server.js
 ```

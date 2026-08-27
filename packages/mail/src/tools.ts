@@ -9,15 +9,14 @@ import {
   buildMoveScript,
   buildReadScript,
   buildSearchScript,
+  buildSendScript,
   buildThreadScript,
 } from "./scripts.js";
 
 /**
- * The Mail tool surface, v1 (docs/02).
- *
- * There is deliberately NO mail_send tool. The outward path is
- * mail_create_draft → the human opens Mail.app → the human hits send.
- * The gate you never build cannot be bypassed.
+ * The Mail tool surface. Reads are free, drafts are write-safe, send is
+ * write-gated (docs/01 house doctrine; docs/02 v1 deferred send until the
+ * approval queue existed — it does now).
  */
 
 /**
@@ -163,7 +162,47 @@ export const mailCreateDraft = defineTool({
       content:
         `${result.reply ? "Reply draft" : "Draft"} saved to Drafts ` +
         `(${result.sender}, subject: ${JSON.stringify(result.subject)}). ` +
-        `Open Mail.app to review and send.`,
+        `Open Mail.app to review, or call mail_send to send it (write-gated).`,
+    };
+  },
+});
+
+export const mailSend = defineTool({
+  name: "mail_send",
+  description:
+    "Send an outgoing message from a named Mail account. Write-gated: live mode " +
+    "plus per-action human approval. Account and to are required — identity and " +
+    "recipient are never guessed. Body is redacted from the audit log.",
+  scope: "Mail",
+  mode: "write-gated",
+  undo: "compensate",
+  redact: ["body"],
+  inputSchema: {
+    account: z.string().min(1).describe("Account name to send from (required)"),
+    to: z.array(z.string().min(3)).min(1).describe("To addresses"),
+    cc: z.array(z.string().min(3)).optional(),
+    bcc: z.array(z.string().min(3)).optional(),
+    subject: z.string().min(1),
+    body: z.string().min(1),
+  },
+  preview: (args: { account: string; to: string[]; subject: string }) =>
+    `Would send from ${args.account} to ${args.to.join(", ")} ` +
+    `subject ${JSON.stringify(args.subject)}. Body redacted.`,
+  handler: async (
+    args: {
+      account: string;
+      to: string[];
+      cc?: string[];
+      bcc?: string[];
+      subject: string;
+      body: string;
+    },
+    ctx
+  ) => {
+    const body = `${args.body}\n\n--\n${ctx.provenance}`;
+    const result = JSON.parse(await runMail(buildSendScript({ ...args, body })));
+    return {
+      content: `Sent (${result.sender}, subject: ${JSON.stringify(result.subject)}).`,
     };
   },
 });
@@ -266,6 +305,7 @@ export const mailTools = [
   mailRead,
   mailThread,
   mailCreateDraft,
+  mailSend,
   mailMark,
   mailMove,
 ];

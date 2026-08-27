@@ -3,13 +3,16 @@ import { mailTools, mailCreateDraft, mailMark, mailMove } from "../src/tools.js"
 
 /** The doctrine of docs/02, encoded as tests so it cannot drift silently. */
 describe("mail doctrine", () => {
-  it("there is NO send tool — draft-first is structural, not policy", () => {
+  it("mail_send exists and is write-gated — house doctrine is send gated, not send absent", () => {
     const names = mailTools.map((t) => t.name);
-    expect(names).not.toContain("mail_send");
-    expect(names.some((n) => n.includes("send"))).toBe(false);
+    expect(names).toContain("mail_send");
+    const send = mailTools.find((t) => t.name === "mail_send");
+    expect(send?.mode).toBe("write-gated");
+    expect(send?.undo).toBe("compensate");
+    expect(send?.redact).toContain("body");
   });
 
-  it("reads are read, drafts are write-safe, mutations are gated", () => {
+  it("reads are read, drafts are write-safe, send and mutations are gated", () => {
     const modes = Object.fromEntries(mailTools.map((t) => [t.name, t.mode]));
     expect(modes).toEqual({
       mail_list_accounts: "read",
@@ -18,6 +21,7 @@ describe("mail doctrine", () => {
       mail_read: "read",
       mail_thread: "read",
       mail_create_draft: "write-safe",
+      mail_send: "write-gated",
       mail_mark: "write-gated",
       mail_move: "write-gated",
     });

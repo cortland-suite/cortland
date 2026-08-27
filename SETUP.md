@@ -14,55 +14,85 @@ The whole path, if you'd rather not read prose. Each block is explained in the
 section that follows.
 
 ```bash
-# 1. the suite
-npm install -g @cortland/setup @cortland/mail @cortland/reminders \
-  @cortland/notes @cortland/calendar @cortland/context
-cortland setup                      # wizard: MCP clients, permissions, folders
+# 1. the suite (@cortland is not on npm yet — build from this repo)
+git clone https://github.com/cortland-suite/cortland.git
+cd cortland
+npm install && npm run build
+npx cortland setup                  # wizard: MCP clients, permissions, folders
 
 # 2. a local model (only for the iMessage bridge)
 brew install ollama
 brew services start ollama            # persistent — survives reboot
 ollama pull gemma4:e2b-it-qat         # 4.3 GB, fits an 8 GB Mac
 
-# 3. the iMessage bridge
-npm install -g @cortland/imessage
+# 3. the iMessage bridge (from the same clone)
 #    → first: create a second Apple ID and sign Messages.app into it (§5.1)
 #    → then: grant Full Disk Access to your terminal AND `which node` (§2)
-cortland-imessage setup --discover \
+npx cortland-imessage setup --discover \
   --model gemma4:e2b-it-qat \
   --name "Your Name" \
   --about "Central timezone. Prefer brief answers."
 #    → it waits; text the assistant from your phone; both handles are detected
 
-cortland-imessage status            # every line should be green
-cortland-imessage install           # launchd: runs whenever the Mac is on
+npx cortland-imessage status        # every line should be green
+npx cortland-imessage install       # launchd: runs whenever the Mac is on
 
 # 4. allow writes (still asks per action)
 #    edit ~/Library/Application Support/cortland/config.json → "live": true
 ```
 
-To stop everything: `cortland-imessage uninstall`, or set `"live": false`
+To stop everything: `npx cortland-imessage uninstall`, or set `"live": false`
 for an instant read-only mode that needs no restart.
 
 ---
 
 ## 0. What you need
 
+Check this **before** you clone. Failures people hit are almost always here,
+not in the TypeScript.
+
+### Minimum — tools in Cursor / Claude / Codex / LM Studio
+
 | | |
 |---|---|
-| **A Mac** | Apple Silicon strongly preferred if you want local models. macOS 13+ for the iMessage bridge (it reads the modern `chat.db` layout). |
-| **Node 20+** | `node -v`. Install via [nodejs.org](https://nodejs.org) or `brew install node`. |
-| **RAM** | 8 GB works, but it constrains which local model you can run — see [§6](#6-choosing-a-local-model). 16 GB+ is comfortable. |
-| **An MCP client** | Claude Code, Claude Desktop, or any MCP-speaking app. Not needed if you only want the iMessage bridge. |
+| **macOS 13 Ventura** or newer | Mail/Reminders/Notes/Calendar Automation. The iMessage bridge also needs 13+ (`chat.db`). |
+| **Node 20+** | `node -v`. [nodejs.org](https://nodejs.org) or `brew install node`. |
+| **Xcode Command Line Tools** | `xcode-select -p`. If that errors: `xcode-select --install`. Required to compile `better-sqlite3`. |
+| **~500 MB disk** | Clone + `node_modules` + build. |
+| **An MCP client** | Cursor, Claude Code, Claude Desktop, Codex, or LM Studio 0.3.17+. |
+| **The Apple apps, signed in as you** | Cortland does not create iCloud accounts for Mail. |
+
+Intel Macs can drive a cloud/Cursor model against these tools. They are a
+poor place to run a local LLM.
+
+### Extra — local model (LM Studio, Ollama, Osaurus)
+
+| | |
+|---|---|
+| **RAM** | **8 GB minimum** (Gemma 4 E2B, 4.3 GB weights). 16 GB+ if you want E4B or several apps loaded. |
+| **Disk** | **+6 GB** for Ollama + `gemma4:e2b-it-qat`. LM Studio/Osaurus models similar. |
+| **Apple Silicon** | Strongly recommended. M1 or newer. |
+| **Osaurus** | macOS 15.5+, Apple Silicon. |
+
+### Extra — texting it (iMessage bridge)
+
+| | |
+|---|---|
+| **Second Apple ID** | Signed into **Messages.app only**. Mouthpiece, not a worker. [§5.1](#51-create-the-assistants-apple-id). |
+| **Full Disk Access** | Terminal (or your `node` binary, if launchd). Reads `chat.db`. |
+| **Automation → Messages** | First send prompts. |
 
 ---
 
 ## 1. Install
 
+`@cortland` 0.2.0 is not on npm yet. Clone and build:
+
 ```bash
-npm install -g @cortland/setup @cortland/mail @cortland/reminders \
-  @cortland/notes @cortland/calendar @cortland/context
-cortland setup
+git clone https://github.com/cortland-suite/cortland.git
+cd cortland
+npm install && npm run build
+npx cortland setup
 ```
 
 The wizard asks before every step (default is always **No**) and writes what it
@@ -154,7 +184,8 @@ never what. The topic name is the secret; the wizard mints an unguessable one.
 ## 4. Using it from an MCP client
 
 Once registered, just talk to your assistant: *"what did I miss this week?"*,
-*"draft a reply saying Thursday works"*, *"remind me to bring the contract."*
+*"draft a reply saying Thursday works"*, *"send that reply"* (asks first),
+*"remind me to bring the contract."*
 The tools are invisible; you'll only notice Cortland when it asks permission.
 
 Verify from a terminal:
@@ -186,6 +217,10 @@ Your system iCloud account stays exactly as it is.
 
 ### 5.2 Install Ollama and a model
 
+Never installed a local model? Illustrated, from zero, including LM Studio
+and Osaurus as *clients* rather than the bridge brain:
+**[docs/08_local_models.md](docs/08_local_models.md)**.
+
 ```bash
 brew install ollama
 ollama serve                       # or: brew services start ollama
@@ -193,6 +228,9 @@ ollama pull gemma4:e2b-it-qat      # 4.3 GB — good default for 8 GB Macs
 ```
 
 ### 5.3 Configure — with automatic handle discovery
+
+From this repo, prefix every `cortland-imessage` / `cortland-remote` command
+with `npx` (the binaries are workspace bins until `@cortland` is on npm).
 
 The handle Messages stores is rarely the one you'd type (E.164 `+15551234567`,
 or an Apple ID). So don't type it — let setup watch for your message:
@@ -271,7 +309,10 @@ tool packages are mounted.
 
 ## 6. Choosing a local model
 
-The binding constraint is RAM, not the model's spec sheet.
+The binding constraint is RAM, not the model's spec sheet. **Which app holds
+the model** (Cursor vs LM Studio vs Ollama vs Osaurus) is
+**[docs/08_local_models.md](docs/08_local_models.md)** — illustrated, from a
+clean install.
 
 | Model | Size | Verdict on 8 GB |
 |---|---|---|
@@ -290,10 +331,9 @@ tools cost ~2,400 tokens of schema before you type a word).
 ## 7. Remote access (other devices)
 
 ```bash
-npm install -g @cortland/remote
-cortland-remote token mint --label my-laptop   # shown once; only a hash is stored
-cortland-remote serve
-tailscale serve --bg 7811                        # reach it from your own devices
+npx cortland-remote token mint --label my-laptop   # shown once; only a hash is stored
+npx cortland-remote serve
+tailscale serve --bg 7811                          # reach it from your own devices
 ```
 
 Loopback-only by design — there is no setting to bind wider; exposure is always

@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="380" viewBox="0 0 860 380" role="img" aria-label="Two ways to run Cortland: an MCP client hosts the model, or you text an iMessage bridge that hosts a local model.">
+  <style>
+    .bg { fill: #ffffff; }
+    .frame { fill: none; stroke: #d8d8dc; stroke-width: 1; }
+    .card { fill: #f6f6f6; }
+    .card2 { fill: #ffffff; stroke: #d8d8dc; }
+    .h { font: 600 16px -apple-system, "SF Pro Text", "Helvetica Neue", Arial, sans-serif; fill: #111; }
+    .p { font: 400 13px -apple-system, "SF Pro Text", "Helvetica Neue", Arial, sans-serif; fill: #3a3a3c; }
+    .s { font: 400 12px -apple-system, "SF Pro Text", "Helvetica Neue", Arial, sans-serif; fill: #8a8a8e; }
+    .tag { font: 600 11px -apple-system, "SF Pro Text", Arial, sans-serif; fill: #007aff; }
+    .box { fill: #ffffff; stroke: #d8d8dc; }
+    .blue { fill: #007aff; }
+    .w { font: 600 12px -apple-system, "SF Pro Text", Arial, sans-serif; fill: #fff; }
+    .k { font: 500 12px ui-monospace, "SF Mono", Menlo, monospace; fill: #111; }
+  </style>
+  <rect class="bg" x="0" y="0" width="860" height="380" rx="14"/>
+  <rect class="frame" x="0.5" y="0.5" width="859" height="379" rx="14"/>
+
+  <text class="h" x="28" y="36">Cortland is the tools. You pick the brain.</text>
+  <text class="s" x="28" y="56">Same governed Mail / Reminders / Notes / Calendar either way.</text>
+
+  <!-- Path A -->
+  <rect class="card" x="20" y="76" width="400" height="284" rx="12"/>
+  <text class="tag" x="40" y="104">PATH A · MCP CLIENT</text>
+  <text class="h" x="40" y="130">The client hosts the model</text>
+  <text class="p" x="40" y="154">Cursor, Claude, Codex, LM Studio, Osaurus.</text>
+  <text class="p" x="40" y="172">You chat in that app. Cortland is a plugin.</text>
+
+  <rect class="box" x="40" y="196" width="110" height="44" rx="8"/>
+  <text class="k" x="52" y="223">You</text>
+  <path d="M156 218 h28" stroke="#007aff" stroke-width="2"/>
+  <polygon points="184,218 176,214 176,222" fill="#007aff"/>
+  <rect class="box" x="190" y="196" width="110" height="44" rx="8"/>
+  <text class="k" x="202" y="223">Client + model</text>
+  <path d="M306 218 h28" stroke="#007aff" stroke-width="2"/>
+  <polygon points="334,218 326,214 326,222" fill="#007aff"/>
+  <rect x="340" y="196" width="60" height="44" rx="8" class="blue"/>
+  <text class="w" x="348" y="223">tools</text>
+
+  <text class="s" x="40" y="268">No second Apple ID. No Ollama required.</text>
+  <text class="s" x="40" y="286">Approvals: Mac dialog, Files app, or the</text>
+  <text class="s" x="40" y="302">clients own card if it actually renders one.</text>
+  <text class="s" x="40" y="330">Best when you already live in an IDE or a</text>
+  <text class="s" x="40" y="346">local-chat app and want Mail on the side.</text>
+
+  <!-- Path B -->
+  <rect class="card" x="440" y="76" width="400" height="284" rx="12"/>
+  <text class="tag" x="460" y="104">PATH B · iMESSAGE BRIDGE</text>
+  <text class="h" x="460" y="130">You text it from your phone</text>
+  <text class="p" x="460" y="154">Second Apple ID in Messages on the Mac.</text>
+  <text class="p" x="460" y="172">Ollama (today) is the brain on disk.</text>
+
+  <rect class="box" x="460" y="196" width="90" height="44" rx="8"/>
+  <text class="k" x="472" y="223">Phone</text>
+  <path d="M556 218 h22" stroke="#007aff" stroke-width="2"/>
+  <polygon points="578,218 570,214 570,222" fill="#007aff"/>
+  <rect class="box" x="584" y="196" width="90" height="44" rx="8"/>
+  <text class="k" x="596" y="223">Ollama</text>
+  <path d="M680 218 h22" stroke="#007aff" stroke-width="2"/>
+  <polygon points="702,218 694,214 694,222" fill="#007aff"/>
+  <rect x="708" y="196" width="108" height="44" rx="8" class="blue"/>
+  <text class="w" x="720" y="223">Mac as you</text>
+
+  <text class="s" x="460" y="268">Mouthpiece account owns nothing. Your</text>
+  <text class="s" x="460" y="286">iCloud stays yours. Approvals: reply</text>
+  <text class="s" x="460" y="302">yes a3f9c1 in the same thread.</text>
+  <text class="s" x="460" y="330">Best when the interface you want is the</text>
+  <text class="s" x="460" y="346">one already on every device you own.</text>
+</svg>

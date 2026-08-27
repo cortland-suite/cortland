@@ -9,8 +9,8 @@ reads those writes need — and **there is no attendees parameter at all**.
 `event_create` deliberately cannot invite anyone: an event with attendees is
 outward-facing — Calendar mails invitations the moment it saves — so v1 simply
 does not have the parameter. The worst case is a stray event on your own
-calendar, not an email in someone else's inbox. Same doctrine as mail's
-missing send tool: the gate that was never built cannot be bypassed.
+calendar, not an email in someone else's inbox. Same doctrine as an ungated
+send: the capability that was never built cannot be bypassed.
 
 ## One calendar per query
 
