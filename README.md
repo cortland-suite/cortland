@@ -1,10 +1,75 @@
 # Cortland 🍎
 
-**Give an AI real access to your Mac — Mail, Calendar, Reminders, Notes, files —
-without giving it the keys.** Every consequential action previews first, waits
-for your approval through a channel the model can't touch, gets logged, and can
-be undone. Bring your own model: Claude, or a local one that never leaves the
-machine.
+**Your agent brings the brain. Cortland brings the hands — and the human gate.**
+
+Give an AI real access to your Mac — Mail, Calendar, Reminders, Notes, files —
+without giving it the keys. Every consequential action previews first, waits for
+your approval through a channel the model can't touch, gets logged, and can be
+undone.
+
+Cortland has no model of its own, no cloud, and no web access. That is the
+point. Whatever agent you already use — Claude, Codex, Cursor, or a local Gemma
+that never leaves the machine — gets a governed way to touch your real data and
+to reach you.
+
+---
+
+## A worked example
+
+An agent watched a handful of retailer pages for days, waiting for a limited-run
+controller to come back in stock. When it finally did — unattended, at an hour I
+was nowhere near my desk — my phone buzzed with an iMessage. I bought one.
+
+**Cortland never touched a website.** It has no web-fetch tool and never has.
+The watching was done by a coding agent with internet access. Cortland was the
+part that reached me: on my own Mac, through Messages, with the recipient fixed
+in local config so nothing the agent generated could point that message at
+anyone else.
+
+That division is the pitch in one story. Your agent has the reasoning and the
+internet. Cortland has your Mac, your Apple apps, and your attention — and every
+outward action still stops to ask.
+
+### The part worth telling
+
+The first version cheated, and I only found out by reading my own audit log.
+
+No governed "tell the human" tool existed. The iMessage bridge could *answer*
+me, but nothing could start a conversation — so the monitor imported Cortland's
+send module directly and called it. It worked, and it was genuinely Cortland
+doing the sending: same owner handle from config, same AppleScript escaping,
+same hourly rate cap. But it went *around* the framework instead of through it,
+so days of running left **zero audit rows**.
+
+That is this project failing its own test. A guarantee with no legitimate path
+through it is a guarantee people route around — and the person who routed around
+it was the one who wrote the guarantee.
+
+The fix is [`notify_owner`](packages/imessage): write-safe, because a message to
+you is not an outward action, it *is* the review loop. It has no recipient
+argument at all — the handle comes from local config, so no model output and no
+injected content can redirect it. Its hourly cap is counted from the audit log
+rather than from memory, so a cron job that starts fresh every run still can't
+exceed it. A notification now leaves a row behind. This one is real, copied out
+of the audit DB after sending a test message to my own phone:
+
+```
+notify_owner | Messages | write-safe | undo=none | dry_run=0 | ok
+principal: cli:notify   tool_version: 0.2.0
+args: {"text":{"redacted":true,"length":84,"sha256":"3e389e33…"},
+       "source":"cortland-test"}
+```
+
+The body is stored as a length and a hash — the row proves a message was sent
+without keeping what it said. `source` stays readable because it is a label,
+constrained to a slug, and not content anyone can compose.
+
+---
+
+## What it looks like in use
+
+**Text it like a contact** — the bridge, answered by a 4 GB model on an 8 GB
+MacBook Air. Nothing left the Mac:
 
 ```
 You:       Add a reminder to call the vet tomorrow at 2pm
@@ -12,18 +77,11 @@ Cortland: Received — working on it…
 Cortland: Added "Call vet" for tomorrow, Aug 3 at 2:00 PM.
 ```
 
-That conversation happened over iMessage, answered by a 4 GB model running on
-an 8 GB MacBook Air. Nothing left the Mac.
-
 The texting interface needs a **second Apple ID**, signed into Messages on the
 Mac only — a mouthpiece, not a worker. It owns no mail, no calendar, no data.
 You text it from your phone like any contact; the Mac still does the work as
 *you*. Your system iCloud stays yours. Claude Code, Cursor, Codex, and other
 MCP clients skip this step: they talk to the same tools over stdio.
-
----
-
-## What it looks like in use
 
 **Ask about your week** — reads are free, no approval needed:
 
@@ -186,7 +244,7 @@ Ollama: **[docs/08_local_models.md](docs/08_local_models.md)**.
 | [`@cortland/notes`](packages/notes) | Notes: folders, search, read, create, append. |
 | [`@cortland/calendar`](packages/calendar) | Calendar: window queries, create, delete. Cannot send invitations, by design. |
 | [`@cortland/context`](packages/context) | Local context layer: mail/calendar *metadata* (pointers, never bodies), briefings, person lookups, a corrections flywheel. |
-| [`@cortland/imessage`](packages/imessage) | Text your own AI. Second Apple ID in Messages (mouthpiece only); owner-only by construction, approvals by reply. |
+| [`@cortland/imessage`](packages/imessage) | Text your own AI. Second Apple ID in Messages (mouthpiece only); owner-only by construction, approvals by reply, plus `notify_owner` so an unattended agent can reach you first. |
 | [`@cortland/folders`](packages/folders) | Folder-as-API: drop a file in iCloud from any device, a declared local pipeline runs. |
 | [`@cortland/remote`](packages/remote) | Reach the suite from your other devices over your own private network. |
 | [`@cortland/setup`](packages/setup) | The onboarding wizard. |
