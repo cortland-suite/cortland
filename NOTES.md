@@ -354,13 +354,15 @@ deterministic — a read tool must not quietly spend model calls.)
 
 ## DECISIONS
 
+- 2026-08-27 — **Public copy does not mention npm.** README, SETUP, docs/08,
+  and social drafts talk about cloning the repo. `npm install && npm run build`
+  stays as the build command. No “not on npm yet,” no `npx @cortland/…`.
 - 2026-08-26 — **Public repo flushed for first users.** README leads with
   requirements (macOS 13, Node 20, Xcode CLT, 8 GB / +6 GB for Gemma 4 E2B)
   and a Cursor quick start that does not need a second Apple ID. Illustrated
   local-model guide is docs/08 (Cursor, Codex, LM Studio, Osaurus, Ollama).
-  `mail_send` is write-gated in tree. Install remains clone-from-GitHub;
-  `@cortland` 0.2.0 is not on npm. GitHub org+repo renamed and public earlier
-  the same day.
+  `mail_send` is write-gated in tree. Install is clone-from-GitHub.
+  GitHub org+repo renamed and public earlier the same day.
 - 2026-08-26 — **GitHub rename shipped, repo public.** Org
   `honeycrisp-suite` → `cortland-suite`, repo `honeycrisp` → `cortland`.
   `main` is https://github.com/cortland-suite/cortland (public). `@cortland`

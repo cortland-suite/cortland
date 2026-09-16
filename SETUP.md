@@ -14,7 +14,7 @@ The whole path, if you'd rather not read prose. Each block is explained in the
 section that follows.
 
 ```bash
-# 1. the suite (@cortland is not on npm yet — build from this repo)
+# 1. the suite
 git clone https://github.com/cortland-suite/cortland.git
 cd cortland
 npm install && npm run build
@@ -86,7 +86,7 @@ poor place to run a local LLM.
 
 ## 1. Install
 
-`@cortland` 0.2.0 is not on npm yet. Clone and build:
+Clone and build:
 
 ```bash
 git clone https://github.com/cortland-suite/cortland.git
@@ -230,7 +230,7 @@ ollama pull gemma4:e2b-it-qat      # 4.3 GB — good default for 8 GB Macs
 ### 5.3 Configure — with automatic handle discovery
 
 From this repo, prefix every `cortland-imessage` / `cortland-remote` command
-with `npx` (the binaries are workspace bins until `@cortland` is on npm).
+with `npx`.
 
 The handle Messages stores is rarely the one you'd type (E.164 `+15551234567`,
 or an Apple ID). So don't type it — let setup watch for your message:

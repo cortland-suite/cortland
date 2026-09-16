@@ -37,7 +37,7 @@ On top of that, a **local** model wants:
 
 ## 0. Build Cortland once
 
-`@cortland` 0.2.0 is not on npm yet. Everything below assumes this clone:
+Everything below assumes this clone:
 
 ```bash
 git clone https://github.com/cortland-suite/cortland.git
@@ -340,7 +340,7 @@ reply `yes a3f9c1`.
 
 | Symptom | Likely cause |
 |---|---|
-| Tools never appear | Client JSON/TOML path is wrong; `npm run build` not run; using `npx @cortland/mail` while unpublished |
+| Tools never appear | Client JSON/TOML path is wrong; `npm run build` not run; client pointed at a package name instead of this clone’s `dist/server.js` |
 | Automation prompt never came | First call hasn’t happened, or you dismissed it. System Settings → Privacy & Security → Automation |
 | Full-text mail search empty | Spotlight without Full Disk Access **silently returns 0**. The tool must refuse, not look empty — if you see empty, FDA is missing |
 | LM Studio chats but never calls tools | Model has no tool template, or Program/MCP servers failed to spawn (open LM Studio logs) |

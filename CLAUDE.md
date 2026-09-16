@@ -47,9 +47,9 @@ and the iMessage bridge (docs/06).
   tool-naming and packaging conventions where sensible.
 - **Naming:** the suite is **Cortland** (decided 2026-07-30, see NOTES).
   Packages ship scoped: @cortland/governed, /mail, /reminders, /notes, /calendar,
-  /folders, /context, /imessage, /setup, /remote. `@cortland` 0.2.0 is not on
-  npm yet (install from the repo). Mail, reminders, notes, calendar, context,
-  and imessage carry `mcpName` + `server.json` for the official MCP Registry.
+  /folders, /context, /imessage, /setup, /remote. Install from this repo.
+  Mail, reminders, notes, calendar, context, and imessage carry `mcpName` +
+  `server.json` for the official MCP Registry.
 
 ## How to work a session here
 

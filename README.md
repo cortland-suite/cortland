@@ -93,8 +93,7 @@ signed into Messages.app — not into System Settings. See
 
 **Osaurus as a client:** Apple Silicon, macOS 15.5+.
 
-Not required: an npm `@cortland` install (0.2.0 is GitHub-only for now), a
-developer account, iCloud for Path A, or any API key.
+Not required: a developer account, iCloud for Path A, or any API key.
 
 ---
 
@@ -160,7 +159,7 @@ each guarantee can't be bypassed — and every tool in the suite is built on it.
 
 ## Install
 
-`@cortland` 0.2.0 is not on npm yet. From the repo:
+From the repo:
 
 ```bash
 git clone https://github.com/cortland-suite/cortland.git
