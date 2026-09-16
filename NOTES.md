@@ -354,6 +354,33 @@ deterministic — a read tool must not quietly spend model calls.)
 
 ## DECISIONS
 
+- 2026-09-16 — **`notify_owner` shipped; law 4's "replies only" retired.**
+  The bridge could only answer, never initiate, so an unattended agent had no
+  governed way to reach its owner. The first real caller — a restock watcher
+  running unattended for days — did the only thing available: imported
+  `packages/imessage/dist/send.js` and called `OwnerSender` directly. It
+  worked, and it was genuinely Cortland's code doing the sending (owner handle
+  from config, the AppleScript escaper, the hourly cap), but it bypassed
+  `executeGoverned` entirely: **zero audit rows for the entire run**. The
+  framework's own gap, found by using it. A guarantee with no legitimate path
+  through it is a guarantee people route around.
+  `notify_owner` is write-safe, not gated, and the tier rests on one fact:
+  there is no recipient argument, so nothing a model emits can redirect a
+  message. Gating a text to the owner behind an approval delivered by that
+  same text is a circle, not a safeguard. `undo: "none"` — a sent message
+  cannot be unsent, and the audit row says so. At the cap it throws rather
+  than going quiet; a notification tool that fails silently is the one failure
+  mode it must not have. docs/06 sketched this tool a month ago as
+  `message_send_owner` and it never got built — the design was right, the
+  implementation was the gap.
+- 2026-09-16 — **Rate caps belong in the audit log, not the heap.**
+  `AuditStore.countSince()`. The old token bucket was per-instance memory,
+  which is fine for a daemon and meaningless for a one-shot caller: a cron job
+  or LaunchAgent gets a fresh bucket every run, i.e. no cap. Counting rows
+  makes the cap durable across processes, crashes and reboots, and collapses
+  enforcement and evidence into the same rows. `cortland-imessage notify` is
+  the supported non-MCP entry point, which is exactly the short-lived-process
+  case that forced this.
 - 2026-08-27 — **Public copy does not mention npm.** README, SETUP, docs/08,
   and social drafts talk about cloning the repo. `npm install && npm run build`
   stays as the build command. No “not on npm yet,” no `npx @cortland/…`.

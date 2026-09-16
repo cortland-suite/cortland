@@ -17,6 +17,8 @@ cortland-imessage setup \
 cortland-imessage status     # preflight: config, chat.db access, model, tools
 cortland-imessage run        # foreground
 cortland-imessage install    # launchd: runs whenever the Mac is on
+
+cortland-imessage notify --text "Backup finished" --source nightly-backup
 ```
 
 ## The four laws (enforced in code, not prompts — see docs/06)
@@ -30,8 +32,9 @@ cortland-imessage install    # launchd: runs whenever the Mac is on
 3. **No other conversations exist.** There are no general Messages-reading
    tools here. The bridge sees one thread and sends to one handle, fixed at
    startup — no model output can redirect a message.
-4. **Rate discipline.** A per-hour send cap, replies only, never initiates.
-   The traffic pattern is a person texting one contact, by construction.
+4. **Rate discipline.** A per-hour send cap, counted from the audit log so it
+   holds across restarts. The traffic pattern is a person texting one contact,
+   by construction — one recipient, hard cap, no exceptions.
 
 ## Living with it
 
@@ -44,6 +47,36 @@ cortland-imessage install    # launchd: runs whenever the Mac is on
 - Only the tools a message plausibly needs are sent to the model: a reminder
   request ships ~410 tokens of schema instead of ~2,400, leaving the window
   for the conversation.
+
+## notify_owner — letting an agent reach you first
+
+Everything above is reactive: you text the bridge, the bridge answers. But an
+agent working while you are asleep — a watcher, an overnight job, a pipeline —
+needs to start the conversation. That is `notify_owner`:
+
+```
+notify_owner(text: string, source?: slug)
+```
+
+There is **no recipient argument**. The handle comes from your config, so no
+model output and no injected content can point a message at someone else. That
+is the whole reason it can be write-safe rather than gated: a message to you is
+not an outward action, it is the review loop, and gating it behind an approval
+you would receive by the same channel it is asking to use is a circle, not a
+safeguard.
+
+It is honest about what it cannot do: `undo: "none"`, because a sent text
+cannot be unsent. At the hourly cap it **fails loudly** rather than going
+quiet — a notification tool that silently stops is indistinguishable from one
+with nothing to say. The message body is redacted in the audit log
+(`{length, sha256}`), so the row proves a text was sent without storing it.
+
+Callers that are not MCP clients use the CLI, which runs the same governed
+tool through the same path:
+
+```bash
+cortland-imessage notify --text "Restock: Best Buy" --source stock-monitor
+```
 
 ## Approvals by reply
 

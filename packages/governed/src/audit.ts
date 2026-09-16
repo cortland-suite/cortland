@@ -134,6 +134,26 @@ export class AuditStore {
     }));
   }
 
+  /**
+   * How many times `tool` reached `outcome` since `sinceIso`.
+   *
+   * Rate discipline that has to survive a restart cannot live in a token
+   * bucket on the heap: a caller that runs as a one-shot process gets a
+   * fresh bucket every time, which is no cap at all. The audit log is
+   * already the durable, synchronous record of every execution, so a cap
+   * counted from these rows holds across processes, crashes and reboots —
+   * enforcement and evidence are the same rows.
+   */
+  countSince(tool: string, sinceIso: string, outcome: AuditOutcome = "ok"): number {
+    const row = this.db
+      .prepare(
+        `SELECT COUNT(*) AS n FROM audit
+         WHERE tool = ? AND outcome = ? AND dry_run = 0 AND ts >= ?`
+      )
+      .get(tool, outcome, sinceIso) as { n: number };
+    return row.n;
+  }
+
   close(): void {
     this.db.close();
   }

@@ -52,9 +52,18 @@ model cannot write to) with the UX of texting "yes 4f2a1c".
   in `attributedBody` (a typedstream blob) — best-effort decoder, and rows
   whose text cannot be decoded are DROPPED, never guessed.
 - **send.ts** — AppleScript send via Messages. v1 exposes exactly one send
-  path: **to the owner**. `message_send_owner` is write-safe (talking TO the
-  human is always allowed — it is the review loop). No general send tool
-  exists; messaging anyone else is not gated, it is absent.
+  path: **to the owner**. No general send tool exists; messaging anyone else
+  is not gated, it is absent.
+- **tools.ts** — `notify_owner`, the tool this doc first sketched as
+  `message_send_owner`: write-safe, because talking TO the human is not an
+  outward action, it is the review loop. Shipped 2026-09-16, a month after
+  the rest of the bridge, because until then the package was purely reactive
+  and an unattended agent had no governed way to reach its owner. The tier
+  rests on one fact: there is no recipient argument. The handle comes from
+  config, so no model output and no injected content can redirect a message.
+  Its hourly cap is counted from the audit log rather than a token bucket in
+  memory — a one-shot caller (cron, LaunchAgent) would otherwise start every
+  run with a fresh bucket, which is no cap at all.
 - **approval.ts** — `ImessageApprovalChannel` (reply-to-approve above). Used
   by the bridge's own governed servers via the approval override; other MCP
   hosts keep their existing channels.
@@ -68,18 +77,31 @@ model cannot write to) with the UX of texting "yes 4f2a1c".
 - **bridge.ts** — the daemon: poll inbound (owner-only) → brain → reply via
   send-to-owner. Every inbound command, reply, ignored-sender count, and
   approval outcome is an audit row.
-- **cli.ts** — `cortland-imessage run | status | test`, launchd template.
+- **cli.ts** — `cortland-imessage run | status | notify | install`, launchd
+  template. `notify` is the supported entry point for callers that are not
+  MCP clients (cron, LaunchAgents, shell): it runs the same governed tool
+  through the same `executeGoverned` path, so a text sent from a script
+  leaves the identical audit row as one sent by a model.
 
 ## The fourth law (added after the landscape research, same day)
 
 4. **Rate discipline is a safety property.** Apple has permanently banned
    iMessage automation that looked like spam (Lindy: 10k msgs/12h through
    rotated numbers, banned on launch day, no appeal). The bridge's traffic
-   pattern must be indistinguishable from a person texting one contact:
-   replies only within the owner thread, a hard hourly send cap, no
-   initiation to any handle but the owner, backoff when the human goes
-   quiet. Enforced in code and tested — not tuned for growth, tuned for
-   being boringly personal.
+   pattern must be indistinguishable from a person texting one contact: a
+   hard hourly send cap, **no initiation to any handle but the owner**,
+   backoff when the human goes quiet. Enforced in code and tested — not
+   tuned for growth, tuned for being boringly personal.
+
+   Amended 2026-09-16: the original wording said "replies only." That was
+   the bridge describing its own shape, not a safety property — and it was
+   the reason `notify_owner` did not exist, which in turn is why the first
+   agent that needed to reach its owner reached around the framework
+   instead. What keeps the traffic boringly personal is the single
+   recipient and the cap, both of which `notify_owner` inherits. An
+   unprompted text to your own phone is still one person texting one
+   contact. A guarantee that no legitimate caller can satisfy is a
+   guarantee that gets bypassed.
 
 ## Landscape (research 2026-08-01; full matrix in the session log)
 

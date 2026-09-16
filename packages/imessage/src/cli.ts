@@ -17,8 +17,10 @@ import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import {
   AuditStore,
+  StaticApprovalChannel,
   assertCleanArgv,
   defaultDataDir,
+  executeGoverned,
   loadConfig,
   type ExecutionDeps,
   type GovernedToolDef,
@@ -31,8 +33,10 @@ import { selectTools } from "./select.js";
 import { ChatDb } from "./chatdb.js";
 import { DEFAULT_CHAT_DB, loadBridgeConfig, saveBridgeConfig } from "./config.js";
 import { OwnerSender } from "./send.js";
+import { VERSION, createNotifyOwnerTool } from "./tools.js";
 
-const VERSION = "0.1.0";
+// VERSION lives in tools.ts so the banner, the MCP server and every audit
+// row this CLI writes report the same number.
 const require = createRequire(import.meta.url);
 
 assertCleanArgv(process.argv);
@@ -188,6 +192,39 @@ if (command === "setup" && rest.includes("--discover")) {
   } else {
     await run(config);
   }
+} else if (command === "notify") {
+  // The supported entry point for a caller that is not an MCP client: a cron
+  // job, a LaunchAgent, a shell script. It runs the SAME governed tool the
+  // MCP server exposes, through the same executeGoverned path, so a text sent
+  // from a shell leaves the identical audit row as one sent by a model. The
+  // alternative — importing dist/send.js and calling it directly — is what
+  // this command exists to make unnecessary.
+  const text = flag("text");
+  if (!text) {
+    console.error(
+      'usage: cortland-imessage notify --text "<message>" [--source <slug>]\n' +
+        "  Sends to the owner handle in config. There is no recipient argument."
+    );
+    process.exit(2);
+  }
+  const audit = new AuditStore(dataDir);
+  const deps: ExecutionDeps = {
+    audit,
+    // write-safe never consults the channel; a denying stub keeps it that way
+    // if the tool's mode is ever raised without revisiting this call site.
+    approval: new StaticApprovalChannel(false),
+    getConfig: () => loadConfig(dataDir),
+    version: VERSION,
+    principal: "cli:notify",
+  };
+  const result = await executeGoverned(
+    createNotifyOwnerTool(),
+    { text, source: flag("source") },
+    deps
+  );
+  console.log(result.text);
+  audit.close();
+  if (result.isError) process.exit(1);
 } else if (command === "install" || command === "uninstall") {
   const label = "com.cortland.imessage";
   const plistPath = path.join(os.homedir(), "Library", "LaunchAgents", `${label}.plist`);
@@ -225,6 +262,8 @@ if (command === "setup" && rest.includes("--discover")) {
       "  cortland-imessage setup --discover [--model m] [--name n] [--about a]\n" +
       "      text the assistant from your phone; both handles are detected\n" +
       "  cortland-imessage setup --owner <handle> --assistant <account> [...]\n" +
+      '  cortland-imessage notify --text "<message>" [--source <slug>]\n' +
+      "      text the owner (governed + audited); no recipient argument exists\n" +
       "  cortland-imessage status | run | install | uninstall"
   );
   process.exit(command ? 2 : 0);
